@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>$("webpage.title.submit")</title>
+        <link rel="icon" href="icon.png">
+        <link rel="stylesheet" href="index.css">
+    </head>
+
+    <body>
+        <div class="center-head">
+            <h1>$("webpage.header")</h1>
+        </div>
+        <div class="center">
+            <form method="post">
+                <label for="username">${webpage.label.username}:</label>
+                #("popup-user")<br>
+                <input type="text" id="username" name ="username"><br><br>
+                <label for="token">${webpage.label.token}:</label>
+                #("popup-token")<br>
+                <input type="password" id="token" name ="token"><br><br><br>
+                <input class="submit-off" type="submit" onmousedown="setclass(this.id, true)" onmouseup="setclass(this.id, false)" onmouseout="setclass(this.id, false)" id="submit" name="submit", value='$("webpage.button.submit")'>
+            </form>
+        </div>
+    </body>
+
+    <script type="text/javascript" src="index.js"></script>
+
+</html>
+
+#DEFINE("popup") {
+    <br>
+    <span class="error">
+        $("error")
+    </span>
+}

@@ -1,0 +1,80 @@
+{
+  "name": "English (United Kingdom)",
+  "code": "en-uk",
+  "keys": {
+    "$plugin.name": "&#DB0F60Wildcard",
+    "$plugin.prefix": "$plugin.name &8\\u00BB&7",
+    "unpermitted.join": [
+      "&#DB0F60$server",
+      "",
+      "&#981442You are not allowed to join this server",
+      "",
+      "&7To get access you need to receive a Token from one of the Server members",
+      "&7which you can be used on the server's register interface"
+    ],
+    "unpermitted.ban": [
+      "&#DB0F60$server",
+      "",
+      "&#981442You were removed from the whitelist of the server",
+      "",
+      "&7You will no longer be able to join this server"
+    ],
+    "unpermitted.command": "$prefix You are lacking the permission '&#DB0F60$permission&7' to run this command!",
+    "command.reload.start": "$prefix Reloading...",
+    "command.reload.success": "$prefix &aReload executed successfully!",
+    "command.reload.failed": [
+      "$prefix &cReload failed!",
+      "$prefix &cPlugin will now disable itself!"
+    ],
+    "command.database.unavailable": "$prefix Can't execute command, database is not available!",
+    "command.deny.start": "$prefix Trying to deny '&#DB0F60$user&7'...",
+    "command.deny.known": "$prefix The user '&#DB0F60$user&7' is not on the whitelist!",
+    "command.deny.success": "$prefix The user '&#DB0F60$user&7' was successfully removed from the whitelist!",
+    "command.deny.failed": "$prefix Failed to remove user '&#DB0F60$user&7' from the whitelist!",
+    "command.allow.start": "$prefix Trying to allow '&#DB0F60$user&7'...",
+    "command.allow.known": "$prefix The user '&#DB0F60$user&7' is already on the whitelist!",
+    "command.allow.success": "$prefix The user '&#DB0F60$user&7' was successfully added to the whitelist!",
+    "command.allow.failed": "$prefix Failed to add user '&#DB0F60$user&7' to the whitelist!",
+    "command.get.other.start": "$prefix Trying to get Token of '&#DB0F60$user&7'...",
+    "command.get.other.notfound": "$prefix The user '&#DB0F60$user&7' has no Token!",
+    "command.get.other.found": "$prefix The Token of '&#DB0F60$user&7' has $uses Uses and expires on $expires!",
+    "command.get.self.start": "$prefix Trying to get your Token...",
+    "command.get.self.notfound": "$prefix You currently got no Token!",
+    "command.get.self.found": "$prefix Your Token has $uses Uses and expires on $expires!",
+    "command.target.invalid": "$prefix The target player '&#DB0F60$input&7' doesn't exist!",
+    "command.target.specify": "$prefix Please specify a target player!",
+    "command.create.other.start": "$prefix Trying to create Token for '&#DB0F60$user&7' if no Token is found...",
+    "command.create.other.end": "$prefix The Token of '&#DB0F60$user&7' has $uses Uses and expires on $expires!",
+    "command.create.other.notify": "$prefix Someone generated a Wildcard Token for you!",
+    "command.create.self.start": "$prefix Trying to create your Token if no Token is found...",
+    "command.create.self.end": "$prefix Your Token has $uses Uses and expires on $expires!",
+    "command.history.get.other": "$prefix Trying to get History of '&#DB0F60$user&7'...",
+    "command.history.get.self": "$prefix Trying to get your History...",
+    "command.history.self": "yourself",
+    "command.history.list.start": "$plugin.name &8- &7History of &#DB0F60W$name",
+    "command.history.list.item.deny": [
+      "&8[&#DB0F60W$idx&7] \\u00BB &7",
+      " $idxSize    &7Deny date: &#DB0F60W$time"
+    ],
+    "command.history.list.item.allow": [
+      "&8[&#DB0F60W$idx&7] \\u00BB &7",
+      " $idxSize    &7Token owner: &#DB0F60W$ownerName &8(&7$onwerId&8)",
+      " $idxSize    &7Allow date: &#DB0F60W$time"
+    ],
+    "command.history.list.page.next": "&7Page $page &8\\u00BB",
+    "command.history.list.page.info": " &8[ &7Page $page &8] ",
+    "command.history.list.page.previous": "&8\\u00AB &7Page $page",
+    "command.history.list.end": "$plugin.name &8- &7History of &#DB0F60W$name",
+    "command.action.token.copy": "&7Click to copy Token",
+    "command.action.token.get": "&7Click to get Token Information",
+    "command.action.page.next": "&7Click to go to the next page",
+    "command.action.page.previous": "&7Click to go to the previous page",
+    "webpage.title.submit": "Wildcard Submit",
+    "webpage.title.success": "Wildcard Login Success",
+    "webpage.header": "Wildcard System",
+    "webpage.message.success": "You successfully logged into the Server Whitelist",
+    "webpage.label.username": "Minecraft Username:",
+    "webpage.label.token": "Wildcard Token:",
+    "webpage.button.submit": "Submit"
+  }
+}

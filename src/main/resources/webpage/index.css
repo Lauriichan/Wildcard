@@ -1,0 +1,58 @@
+/* Center in middle of screen */
+.center {
+    width: 50vw;
+    height: 50vh;
+    position: absolute;
+    transform: translate(50%, 75%);
+}
+.center-head {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+}
+input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid #ccc;
+}
+label {
+    font-size: 20px;
+    font-weight: bold;
+}
+input[type="text"] {
+    background-color: #f1f1f1;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: bold;
+}
+input[type="password"] {
+    background-color: #f1f1f1;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: bold;
+}
+input[type="submit"] {
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: bold;
+}
+.submit-on {
+    background-color: #afe4b1;
+    color:rgb(49, 46, 46);
+}
+.submit-off {
+    background-color: #4CAF50;
+    color: white;
+}
+body {
+    background-color: rgb(49, 46, 46);
+    color: lightgray;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: bold;
+}
