@@ -87,13 +87,13 @@ public final class Translation {
     }
 
     @Serialize
-    private String code;
+    private final String code;
     @Serialize
-    private String name;
+    private final String name;
     @Serialize
-    private TranslationMap<String, String> keys = new TranslationMap<>();
+    private final TranslationMap<String, String> keys = new TranslationMap<>();
 
-    private Translation() {
+    public Translation() {
         name = null;
         code = null;
     }

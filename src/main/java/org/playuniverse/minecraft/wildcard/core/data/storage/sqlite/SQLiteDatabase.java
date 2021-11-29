@@ -19,6 +19,7 @@ import org.playuniverse.minecraft.wildcard.core.data.storage.DatabaseInitializat
 import org.playuniverse.minecraft.wildcard.core.data.storage.HistoryEntry;
 import org.playuniverse.minecraft.wildcard.core.data.storage.RequestResult;
 import org.playuniverse.minecraft.wildcard.core.data.storage.Token;
+import org.playuniverse.minecraft.wildcard.core.data.storage.util.TimeHelper;
 import org.playuniverse.minecraft.wildcard.core.data.storage.util.UUIDHelper;
 import org.playuniverse.minecraft.wildcard.core.settings.DatabaseSettings;
 import org.playuniverse.minecraft.wildcard.core.settings.PluginSettings;
@@ -35,7 +36,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.pool.HikariPool;
 
 public class SQLiteDatabase extends Database implements ITickReceiver {
-
+    
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS %s%s";
 
     private static final String SELECT_TOKEN_BY_USER = "SELECT * FROM %s WHERE Owner = ?";
@@ -125,11 +126,11 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     private void setup() throws SQLException {
         try (Connection connection = pool.getConnection()) {
             connection.prepareStatement(String.format(CREATE_TABLE, tokenTable,
-                "(Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires DATETIME, CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner))"))
+                "(Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires VARCHAR(16), CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner))"))
                 .executeUpdate();
             connection
                 .prepareStatement(
-                    String.format(CREATE_TABLE, historyTable, "(User BINARY(16) NOT NULL, TokenOwner BINARY(16), Time DATETIME NOT NULL)"))
+                    String.format(CREATE_TABLE, historyTable, "(User BINARY(16) NOT NULL, TokenOwner BINARY(16), Time VARCHAR(16) NOT NULL)"))
                 .executeUpdate();
         }
     }
@@ -189,7 +190,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
                 final ResultSet set = statement.executeQuery();
                 if (set.next()) {
-                    final OffsetDateTime time = set.getObject("Time", OffsetDateTime.class);
+                    final OffsetDateTime time = TimeHelper.fromString(set.getString("Expires"));
                     final String tokenHash = Hex.encodeHexString(set.getBytes("Token"));
                     final UUID owner = UUIDHelper.toUniqueId(set.getBytes("Owner"));
                     final int uses = set.getInt("Uses");
@@ -203,6 +204,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 }
             } catch (final SQLException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to retrieve token information of '" + uniqueId.toString() + "' from MySQL");
+                logger.log(LogTypeId.DEBUG, exp);
             }
             return null;
         }, executor);
@@ -222,15 +224,20 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             } catch (SQLException | DecoderException exp) {
                 logger.log(LogTypeId.WARNING,
                     "Failed to delete token information of '" + tokenHash + "' owned by '" + uniqueId.toString() + "' from MySQL");
+                logger.log(LogTypeId.DEBUG, exp);
             }
         }, executor);
     }
+    
+    // TODO: Find out why the hell the token is not valid
+    // b58d34472d09fd1e1b0adb0eaf4a250becc9661d
 
     @Override
     public CompletableFuture<Token> getTokenOrGenerate(final UUID uniqueId, final int uses, final OffsetDateTime expires) {
         return getToken(uniqueId)
             .thenComposeAsync(token -> token != null ? CompletableFuture.completedStage(token) : CompletableFuture.supplyAsync(() -> {
                 byte[] tokenRaw = DigestUtils.sha1(tokenGen.makeKey(12));
+                System.out.println(tokenRaw.length);
                 try (Connection connection = pool.getConnection()) {
                     PreparedStatement statement = connection.prepareStatement(selectTokenByToken);
                     statement.setBytes(1, tokenRaw);
@@ -242,13 +249,14 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                     statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
                     statement.setBytes(2, tokenRaw);
                     statement.setInt(3, uses);
-                    statement.setObject(4, expires);
+                    statement.setObject(4, TimeHelper.toString(expires));
                     statement.executeUpdate();
                     final Token generatedToken = new Token(uniqueId, Hex.encodeHexString(tokenRaw), uses, expires);
                     tokenCache.put(uniqueId, token);
                     return generatedToken;
                 } catch (final SQLException exp) {
                     logger.log(LogTypeId.WARNING, "Failed to store token created for '" + uniqueId.toString() + "' to MySQL");
+                    logger.log(LogTypeId.DEBUG, exp);
                 }
                 return null;
             }, executor), executor);
@@ -278,7 +286,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryDeny);
                 statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
-                statement.setObject(2, OffsetDateTime.now());
+                statement.setObject(2, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, false);
                 return CompletableFuture.completedStage(RequestResult.SUCCESS);
@@ -299,7 +307,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryAllow);
                 statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
                 statement.setBytes(2, UUIDHelper.fromUniqueId(targetId));
-                statement.setObject(3, OffsetDateTime.now());
+                statement.setObject(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
                 return CompletableFuture.completedStage(RequestResult.SUCCESS);
@@ -325,7 +333,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 }
                 final UUID targetId = UUIDHelper.toUniqueId(set.getBytes("Owner"));
                 final Token token = tokenCache.has(uniqueId) ? tokenCache.get(uniqueId)
-                    : new Token(targetId, tokenHash, set.getInt("Uses"), set.getObject("Time", OffsetDateTime.class));
+                    : new Token(targetId, tokenHash, set.getInt("Uses"), TimeHelper.fromString(set.getString("Expires")));
                 if (token.use() == -1) {
                     deleteToken(token);
                     return CompletableFuture.completedFuture(RequestResult.FAILED);
@@ -334,7 +342,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 statement = connection.prepareStatement(insertHistoryAllow);
                 statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
                 statement.setBytes(2, UUIDHelper.fromUniqueId(targetId));
-                statement.setObject(3, OffsetDateTime.now());
+                statement.setObject(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
                 return CompletableFuture.completedStage(RequestResult.SUCCESS);
@@ -357,7 +365,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
                 final ResultSet set = statement.executeQuery();
                 while (set.next()) {
-                    final OffsetDateTime time = set.getObject("Time", OffsetDateTime.class);
+                    final OffsetDateTime time = TimeHelper.fromString(set.getString("Time"));
                     final byte[] target = set.getBytes("TokenOwner");
                     list.add(new HistoryEntry(uniqueId, target == null ? null : UUIDHelper.toUniqueId(target), time));
                 }

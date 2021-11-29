@@ -36,8 +36,6 @@ public class TokenLoginCommand implements ICommand {
     public int onLogin(final CommandContext<WebSource> context) {
         final StringReader reader = context.getReader();
         final WebSource source = context.getSource();
-        
-        System.out.println("Hello 1");
 
         final File file = getFile(source.getDirectory(), source.getRequest().getPathAsString());
         if (file == null) {
@@ -49,10 +47,9 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         }
-        
-        System.out.println("Hello 2");
 
-        if (!reader.skipWhitespace().hasNext() || !"username".equals(reader.readUnquoted()) || !reader.skipWhitespace().hasNext()) {
+        final String username;
+        if (!(reader.skipWhitespace().hasNext() && "username".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext() && !(username = reader.readUnquoted()).equals("token"))) {
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onUserNotSet).code(ResponseCode.OK).write(source.getWriter());
@@ -63,10 +60,7 @@ public class TokenLoginCommand implements ICommand {
             return 0;
         }
         
-        System.out.println("Hello 3");
-        
-        final String username = reader.readUnquoted();
-        if (!reader.skipWhitespace().hasNext() || !"token".equals(reader.readUnquoted()) || !reader.skipWhitespace().hasNext()) {
+        if (!(reader.skipWhitespace().hasNext() && "token".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext())) {
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onTokenNotSet).code(ResponseCode.OK).write(source.getWriter());
@@ -76,8 +70,6 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         }
-        
-        System.out.println("Hello 4");
         
         final String token = reader.readUnquoted();
         if (token.length() != 40) {
@@ -90,8 +82,6 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         }
-        
-        System.out.println("Hello 5");
 
         final UUID target = source.getCore().getPlugin().getService().getUniqueId(username);
         if (target == null) {
@@ -104,8 +94,6 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         }
-        
-        System.out.println("Hello 6");
 
         final Container<Database> container = source.getCore().getDatabase();
         if (container.isEmpty()) {
@@ -119,8 +107,6 @@ public class TokenLoginCommand implements ICommand {
         }
         final Database database = container.get();
         
-        System.out.println("Hello 7");
-        
         try {
             new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.PROCESSING).write(source.getWriter());
         } catch (final IOException exp) {
@@ -128,11 +114,7 @@ public class TokenLoginCommand implements ICommand {
             throw new RuntimeException(exp);
         }
         
-        System.out.println("Hello 8");
-        
         final RequestResult result = database.allow(target, token).join();
-        
-        System.out.println("Hello 9");
         
         switch (result) {
         case FAILED:

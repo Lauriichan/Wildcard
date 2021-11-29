@@ -38,8 +38,13 @@ public final class JsonIO {
     }
 
     public static JsonConverter<?, ?> get(final Class<?> json, final Class<?> object) {
+        if(json == null) {
+            return null;
+        }
         for (final JsonConverter<?, ?> converter : CONVERTERS) {
-            if ((json != null && !converter.getJsonType().isAssignableFrom(json)) || !converter.getObjectType().isAssignableFrom(object)) {
+            if (!converter.getJsonType().isAssignableFrom(json) || !converter.getObjectType().isAssignableFrom(object)) {
+                System.out.println(converter.getJsonType().isAssignableFrom(json) + " / " + json.isAssignableFrom(converter.getJsonType()));
+                System.out.println(converter.getObjectType().isAssignableFrom(object) + " / " + object.isAssignableFrom(converter.getObjectType()));
                 continue;
             }
             return converter;
@@ -114,7 +119,7 @@ public final class JsonIO {
 
     private static void putFields(final ArrayList<Field> fields, final Field[] addition) {
         for (final Field field : addition) {
-            if (Modifier.isStatic(field.getModifiers()) || (field.getAnnotation(Serialize.class) == null)) {
+            if (Modifier.isStatic(field.getModifiers()) || (field.getAnnotation(Serialize.class) == null) || fields.contains(field)) {
                 continue;
             }
             fields.add(field);
@@ -163,12 +168,12 @@ public final class JsonIO {
     }
 
     private static void setValue(final Object instance, final Field field, final JsonValue<?> value) {
-        if (value == null) {
+        if (value == null || value.hasType(ValueType.NULL)) {
             return;
         }
         final Class<?> type = field.getType();
-        Object converted = type.equals(value.getClass()) ? value : value.getValue();
-        if (!Primitives.isInstance(type) && !type.equals(value.getClass())) {
+        Object converted = type.isAssignableFrom(value.getClass()) ? value : value.getValue();
+        if (!Primitives.isInstance(type) && !type.isAssignableFrom(converted.getClass())) {
             final JsonConverter<?, ?> converter = get(value.getClass(), type);
             if (converter == null) {
                 return;
@@ -180,14 +185,13 @@ public final class JsonIO {
         }
         setValue(instance, field, converted);
     }
-
-    @SuppressWarnings("deprecation")
+    
     public static void setValue(final Object instance, final Field field, final Object value) {
         try {
             final int modifier = field.getModifiers();
             if (Modifier.isFinal(field.getModifiers())) {
                 AbstractReflect.FIELD.setFieldValue(field, "modify", modifier & ~Modifier.FINAL);
-                if (field.isAccessible()) {
+                if (field.canAccess(instance)) {
                     field.set(instance, value);
                     AbstractReflect.FIELD.setFieldValue(field, "modify", modifier);
                     return;
@@ -198,7 +202,7 @@ public final class JsonIO {
                 AbstractReflect.FIELD.setFieldValue(field, "modify", modifier);
                 return;
             }
-            if (field.isAccessible()) {
+            if (field.canAccess(instance)) {
                 field.set(instance, value);
                 return;
             }

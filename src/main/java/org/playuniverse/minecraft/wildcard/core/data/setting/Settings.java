@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.playuniverse.minecraft.wildcard.core.WildcardCore;
 import org.playuniverse.minecraft.wildcard.core.data.setting.json.JsonIO;
+import org.playuniverse.minecraft.wildcard.core.util.Resources;
 
 import com.syntaxphoenix.syntaxapi.json.JsonEntry;
 import com.syntaxphoenix.syntaxapi.json.JsonObject;
@@ -129,16 +130,18 @@ public final class Settings {
     public void load() {
         JsonObject object;
         try {
-            if (file.exists()) {
-                final JsonValue<?> value = JsonIO.PARSER.fromFile(file);
-                if (value == null || !value.hasType(ValueType.OBJECT)) {
-                    return;
+            if (!file.exists()) {
+                Resources.getExternalPathFor("settings.json");
+                if (!file.exists()) {
+                    throw new IllegalStateException();
                 }
-                object = (JsonObject) value;
-            } else {
-                object = new JsonObject();
             }
-        } catch (IOException | IllegalArgumentException e) {
+            final JsonValue<?> value = JsonIO.PARSER.fromFile(file);
+            if (value == null || !value.hasType(ValueType.OBJECT)) {
+                return;
+            }
+            object = (JsonObject) value;
+        } catch (IOException | IllegalArgumentException | IllegalStateException e) {
             object = new JsonObject();
         } catch (final JsonSyntaxException exp) {
             logger.log(LogTypeId.WARNING, "Failed to load settings.json!");

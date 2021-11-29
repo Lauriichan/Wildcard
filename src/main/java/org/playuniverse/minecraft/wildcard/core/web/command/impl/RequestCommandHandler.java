@@ -83,8 +83,7 @@ public final class RequestCommandHandler {
                 return command;
             }
         }
-        final String command = (pathString.endsWith("/") ? "" : "/") + (path.length == 0 ? "index" : path[path.length - 1]);
-        return command.isBlank() ? pathString + "index" : pathString;
+        return (pathString.endsWith("/") ? "" : "/") + (pathString.isBlank() ? "index" : path[path.length - 1]);
     }
 
     private String asString(final HashMap<String, String> input) {
@@ -94,6 +93,10 @@ public final class RequestCommandHandler {
                 continue;
             }
             builder.append(key).append(' ');
+            String value = input.get(key);
+            if(value != null ) {
+                builder.append(value).append(' ');
+            }
         }
         return builder.substring(0, builder.length() - 1);
     }

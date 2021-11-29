@@ -1,0 +1,33 @@
+{
+    "#web": {
+        "host": "0.0.0.0",
+        "port": 80
+    },
+    "#database": {
+        "type": "sqlite",
+        "sqlite.table.token": "WildcardTokens",
+        "sqlite.table.history": "WildcardHistory",
+        "sqlite.timeout.connection": 7500,
+        "sqlite.pool.max": 4,
+        "sqlite.pool.min": 1,
+        "mysql.table.token": "WildcardTokens",
+        "mysql.table.history": "WildcardHistory",
+        "mysql.timeout.connection": 7500,
+        "mysql.pool.max": 8,
+        "mysql.pool.min": 1,
+        "mysql.host": "localhost",
+        "mysql.port": 3306,
+        "mysql.database": "root",
+        "mysql.username": "root",
+        "mysql.password": "password"
+    },
+    "#plugin": {
+        "language": "en-uk",
+        "cache.uuid.time": 600,
+        "cache.token.time": 3600,
+        "cache.wildcard.time": 1800,
+        "cache.history.time": 300,
+        "cache.message.time": 900,
+        "cache.name.time": 300
+    }
+}

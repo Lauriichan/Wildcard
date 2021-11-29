@@ -3,7 +3,7 @@
   "code": "de-de",
   "keys": {
     "$plugin.name": "&#DB0F60Wildcard",
-    "$plugin.prefix": "$plugin.name &8\\u00BB&7",
+    "$plugin.prefix": "$plugin.name &8\u00BB&7",
     "unpermitted.join": [
       "&#DB0F60$server",
       "",
@@ -27,6 +27,10 @@
       "$prefix &cDie Erweiterung wird sich nun selbst beenden!"
     ],
     "command.database.unavailable": "$prefix Dieser Befehl kann derzeit nicht ausgeführt werden, da die Datenbank nicht erreichbar ist!",
+    "command.target.invalid": "$prefix Der angegebene Nutzer '&#DB0F60$input&7' existiert nicht!",
+    "command.target.specify": "$prefix Bitte gebe einen Nutzer an!",
+    "command.execution.failed": "$prefix Ausführen des Befehls '&#DB0F60$command&7' fehlgeschlagen!",
+    "command.execution.notfound": "$prefix Der Befehl '&#DB0F60$command&7' existiert nicht!",
     "command.deny.start": "$prefix Versuche den Nutzer '&#DB0F60$user&7' zu sperren...",
     "command.deny.known": "$prefix Der Nutzer '&#DB0F60$user&7' ist nicht auf der Gästeliste!",
     "command.deny.success": "$prefix Der Nutzer '&#DB0F60$user&7' wurde erfolgreich von der Gästeliste entfernt!",
@@ -41,8 +45,6 @@
     "command.get.self.start": "$prefix Versuche deinen Token abzurufen...",
     "command.get.self.notfound": "$prefix Du hast derzeit keinen Token!",
     "command.get.self.found": "$prefix Dein Token kann noch $uses mal benutzt werden und läuft am $expires ab!",
-    "command.target.invalid": "$prefix Der angegebene Nutzer '&#DB0F60$input&7' existiert nicht!",
-    "command.target.specify": "$prefix Bitte gebe einen Nutzer an!",
     "command.create.other.start": "$prefix Versuche einen Token für den Nutzer '&#DB0F60$user&7' zu erstellen, falls er noch keinen hat...",
     "command.create.other.end": "$prefix Der Token von dem Nutzer '&#DB0F60$user&7' kann noch $uses mal benutzt werden und läuft am $expires ab!",
     "command.create.other.notify": "$prefix Jemand hat einen Wildcard Token für dich generiert!",
@@ -53,17 +55,17 @@
     "command.history.self": "dir",
     "command.history.list.start": "$plugin.name &8- &7Verlauf von &#DB0F60W$name",
     "command.history.list.item.deny": [
-      "&8[&#DB0F60W$idx&7] \\u00BB &7",
+      "&8[&#DB0F60W$idx&7] \u00BB &7",
       " $idxSize    &7Sperr Datum: &#DB0F60W$time"
     ],
     "command.history.list.item.allow": [
-      "&8[&#DB0F60W$idx&7] \\u00BB &7",
+      "&8[&#DB0F60W$idx&7] \u00BB &7",
       " $idxSize    &7Token Besitzer: &#DB0F60W$ownerName &8(&7$onwerId&8)",
       " $idxSize    &7Freischalt Datum: &#DB0F60W$time"
     ],
     "command.history.list.page.next": "&7Seite $page &8\\u00BB",
     "command.history.list.page.info": " &8[ &7Seite $page &8] ",
-    "command.history.list.page.previous": "&8\\u00AB &7Seite $page",
+    "command.history.list.page.previous": "&8\u00AB &7Seite $page",
     "command.history.list.end": "$plugin.name &8- &7Verlauf von &#DB0F60W$name",
     "command.action.token.copy": "&7Drücke hier um den Token zu kopieren",
     "command.action.token.get": "&7Drücke hier um die Informationen des Tokens aufzurufen",
@@ -73,8 +75,8 @@
     "webpage.title.success": "Wildcard Freigeschaltet",
     "webpage.header": "Wildcard System",
     "webpage.message.success": "Du hast dich erfolgreich in die Gästeliste des Servers eingetragen!",
-    "webpage.label.username": "Minecraft Username:",
-    "webpage.label.token": "Wildcard Token:",
+    "webpage.label.username": "Minecraft Username",
+    "webpage.label.token": "Wildcard Token",
     "webpage.button.submit": "Freischalten"
   }
 }

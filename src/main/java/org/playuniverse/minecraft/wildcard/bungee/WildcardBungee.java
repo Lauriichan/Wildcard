@@ -29,7 +29,6 @@ public final class WildcardBungee extends Plugin implements IWildcardPlugin {
     private final BungeeExecutor executor = new BungeeExecutor(this);
     private final Container<BungeeService> service = Container.of();
 
-    private boolean failed = false;
     private boolean setup = false;
 
     public WildcardBungee() {
@@ -44,7 +43,6 @@ public final class WildcardBungee extends Plugin implements IWildcardPlugin {
     @Override
     public void onEnable() {
         if (!core.enable()) {
-            failed = true;
             onDisable();
             return;
         }
@@ -65,8 +63,6 @@ public final class WildcardBungee extends Plugin implements IWildcardPlugin {
     @Override
     public void onDisable() {
         core.disable();
-        if (failed) {
-        }
     }
 
     @Override

@@ -36,6 +36,7 @@ public final class WildcardCommand implements IBasicCommand {
         root.putChild(new ExecutionNode<>("allow", this::onAllow));
         root.putChild(new ExecutionNode<>("deny", this::onDeny));
         root.putChild(new ExecutionNode<>("get", this::onGet));
+        root.setExecution("get");
         return root;
     }
 
@@ -56,7 +57,7 @@ public final class WildcardCommand implements IBasicCommand {
         final HistoryEntry[] history = getHistory(target, info, database, reader);
         int page = 0;
         final int pages = (int) Math.ceil(history.length / 6d);
-        if (reader.skipWhitespace().testInt()) {
+        if (reader.skipWhitespace().hasNext() && reader.testInt()) {
             page = Math.min(pages, Math.max(0, reader.parseInt()));
         }
         final int startIndex = page * 6;
@@ -138,13 +139,16 @@ public final class WildcardCommand implements IBasicCommand {
                 }
             }
             OffsetDateTime time = OffsetDateTime.now();
+            
+            // TODO: Find out why the fuck this piece of shit isn't parsing correctly
+            
             int expires = 7;
-            if (reader.skipWhitespace().testInt()) {
+            if (reader.skipWhitespace().hasNext() && reader.testInt()) {
                 expires = Math.min(365, reader.parseInt());
             }
             time = expires <= 0 ? null : time.plusDays(expires);
             int uses = 10;
-            if (reader.skipWhitespace().testInt()) {
+            if (reader.skipWhitespace().hasNext() && reader.testInt()) {
                 uses = reader.parseInt();
                 if (uses <= 0) {
                     uses = Integer.MAX_VALUE;
@@ -154,6 +158,9 @@ public final class WildcardCommand implements IBasicCommand {
             info.send("command.create.other.start", "user", name);
             final Token token = database.getTokenOrGenerate(uniqueId, uses, time).join();
             info.send(getTokenMessage(info, "command.create.other.end", name, token));
+            if(!info.isPlayer()) {
+                info.send("&7" + token.getToken());
+            }
             final MessageAdapter target = info.getMessageAdapter(uniqueId);
             if (!target.isOnline()) {
                 return;
@@ -292,6 +299,9 @@ public final class WildcardCommand implements IBasicCommand {
                 return;
             }
             info.send(getTokenMessage(info, "command.get.other.found", name, token));
+            if(!info.isPlayer()) {
+                info.send("&7" + token.getToken());
+            }
             return;
         }
         info.send("command.get.self.start");

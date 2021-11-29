@@ -3,7 +3,7 @@
   "code": "en-uk",
   "keys": {
     "$plugin.name": "&#DB0F60Wildcard",
-    "$plugin.prefix": "$plugin.name &8\\u00BB&7",
+    "$plugin.prefix": "$plugin.name &8\u00BB&7",
     "unpermitted.join": [
       "&#DB0F60$server",
       "",
@@ -27,6 +27,10 @@
       "$prefix &cPlugin will now disable itself!"
     ],
     "command.database.unavailable": "$prefix Can't execute command, database is not available!",
+    "command.target.invalid": "$prefix The target player '&#DB0F60$input&7' doesn't exist!",
+    "command.target.specify": "$prefix Please specify a target player!",
+    "command.execution.failed": "$prefix Failed to execute command '&#DB0F60$command&7'!",
+    "command.execution.notfound": "$prefix The command '&#DB0F60$command&7' doesn't exist!",
     "command.deny.start": "$prefix Trying to deny '&#DB0F60$user&7'...",
     "command.deny.known": "$prefix The user '&#DB0F60$user&7' is not on the whitelist!",
     "command.deny.success": "$prefix The user '&#DB0F60$user&7' was successfully removed from the whitelist!",
@@ -41,8 +45,6 @@
     "command.get.self.start": "$prefix Trying to get your Token...",
     "command.get.self.notfound": "$prefix You currently got no Token!",
     "command.get.self.found": "$prefix Your Token has $uses Uses and expires on $expires!",
-    "command.target.invalid": "$prefix The target player '&#DB0F60$input&7' doesn't exist!",
-    "command.target.specify": "$prefix Please specify a target player!",
     "command.create.other.start": "$prefix Trying to create Token for '&#DB0F60$user&7' if no Token is found...",
     "command.create.other.end": "$prefix The Token of '&#DB0F60$user&7' has $uses Uses and expires on $expires!",
     "command.create.other.notify": "$prefix Someone generated a Wildcard Token for you!",
@@ -53,17 +55,17 @@
     "command.history.self": "yourself",
     "command.history.list.start": "$plugin.name &8- &7History of &#DB0F60W$name",
     "command.history.list.item.deny": [
-      "&8[&#DB0F60W$idx&7] \\u00BB &7",
+      "&8[&#DB0F60W$idx&7] \u00BB &7",
       " $idxSize    &7Deny date: &#DB0F60W$time"
     ],
     "command.history.list.item.allow": [
-      "&8[&#DB0F60W$idx&7] \\u00BB &7",
+      "&8[&#DB0F60W$idx&7] \u00BB &7",
       " $idxSize    &7Token owner: &#DB0F60W$ownerName &8(&7$onwerId&8)",
       " $idxSize    &7Allow date: &#DB0F60W$time"
     ],
-    "command.history.list.page.next": "&7Page $page &8\\u00BB",
+    "command.history.list.page.next": "&7Page $page &8\u00BB",
     "command.history.list.page.info": " &8[ &7Page $page &8] ",
-    "command.history.list.page.previous": "&8\\u00AB &7Page $page",
+    "command.history.list.page.previous": "&8\u00AB &7Page $page",
     "command.history.list.end": "$plugin.name &8- &7History of &#DB0F60W$name",
     "command.action.token.copy": "&7Click to copy Token",
     "command.action.token.get": "&7Click to get Token Information",
@@ -73,8 +75,8 @@
     "webpage.title.success": "Wildcard Login Success",
     "webpage.header": "Wildcard System",
     "webpage.message.success": "You successfully logged into the Server Whitelist",
-    "webpage.label.username": "Minecraft Username:",
-    "webpage.label.token": "Wildcard Token:",
+    "webpage.label.username": "Minecraft Username",
+    "webpage.label.token": "Wildcard Token",
     "webpage.button.submit": "Submit"
   }
 }

@@ -19,7 +19,7 @@ public final class PlaceholderListener implements EventListener {
             if (!placeholder.getKey().startsWith("webpage.")) {
                 continue;
             }
-            System.out.println(translation.translate(placeholder.getKey()));
+//            System.out.println(translation.translate(placeholder.getKey()));
             placeholder.setValue(translation.translate(placeholder.getKey()));
         }
         if (event.getData().getPathAsString().contains("success")) {

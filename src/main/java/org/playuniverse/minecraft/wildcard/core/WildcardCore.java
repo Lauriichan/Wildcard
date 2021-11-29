@@ -32,7 +32,6 @@ import org.playuniverse.minecraft.wildcard.core.web.listener.PathListener;
 import org.playuniverse.minecraft.wildcard.core.web.listener.PlaceholderListener;
 
 import com.syntaxphoenix.syntaxapi.event.EventManager;
-import com.syntaxphoenix.syntaxapi.json.io.JsonWriter;
 import com.syntaxphoenix.syntaxapi.logging.ILogger;
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
@@ -84,6 +83,8 @@ public final class WildcardCore {
         JsonIO.register(new FileConverter());
         JsonIO.register(new ListConverter());
         JsonIO.register(new MapConverter());
+        JsonIO.PARSER.getClass();
+        JsonIO.WRITER.getClass();
         Singleton.get(Settings.class).load();
         Singleton.get(PluginSettings.class).load();
         Singleton.get(WebSettings.class).load();
@@ -108,11 +109,6 @@ public final class WildcardCore {
     public void postSetup() {
         register(new WildcardCommand());
         cacheTimer.add(plugin.getService());
-        initClasses();
-    }
-    
-    private void initClasses() {
-        JsonWriter.class.getClass();
     }
 
     public void disable() {

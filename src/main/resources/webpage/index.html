@@ -16,18 +16,16 @@
         </div>
         <div class="center">
             <form method="post">
-                <label for="username">${webpage.label.username}:</label>
+                <label for="username">$("webpage.label.username"):</label>
                 #("popup-user")<br>
                 <input type="text" id="username" name ="username"><br><br>
-                <label for="token">${webpage.label.token}:</label>
+                <label for="token">$("webpage.label.token"):</label>
                 #("popup-token")<br>
-                <input type="password" id="token" name ="token"><br><br><br>
-                <input class="submit-off" type="submit" onmousedown="setclass(this.id, true)" onmouseup="setclass(this.id, false)" onmouseout="setclass(this.id, false)" id="submit" name="submit", value='$("webpage.button.submit")'>
+                <input type="text" id="token" name ="token"><br><br><br>
+                <input class="_submit-off" type="submit" id="_submit" value='$("webpage.button.submit")'>
             </form>
         </div>
     </body>
-
-    <script type="text/javascript" src="index.js"></script>
 
 </html>
 

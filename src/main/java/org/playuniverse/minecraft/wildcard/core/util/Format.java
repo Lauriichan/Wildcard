@@ -1,6 +1,7 @@
 package org.playuniverse.minecraft.wildcard.core.util;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 import com.syntaxphoenix.syntaxapi.logging.color.ColorTools;
 
@@ -30,13 +31,7 @@ public enum Format {
     RESET('r');
 
     public static final char COLOR_CODE = '&';
-    private static final int[] SUBTRACTS = {
-        0x30,
-        0x37,
-        0x49,
-        0x50
-    };
-    private static final Format[] FORMATS = Format.values();
+    private static final HashMap<Character, Format> FORMATS = new HashMap<>();
 
     private final boolean format;
     private final Color color;
@@ -71,18 +66,13 @@ public enum Format {
     }
 
     public static Format byChar(char code) {
-        code = Character.toLowerCase(code);
-        for (final int sub : SUBTRACTS) {
-            final int dif = code - sub;
-            if (dif < 0) {
-                return null;
-            }
-            if (dif > FORMATS.length || FORMATS[dif].code != code) {
-                continue;
-            }
-            return FORMATS[dif];
+        return FORMATS.get(Character.toLowerCase(code));
+    }
+    
+    static {
+        for(Format format : Format.values()) {
+            FORMATS.put(format.code, format);
         }
-        return null;
     }
 
 }

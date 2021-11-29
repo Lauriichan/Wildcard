@@ -5,7 +5,6 @@ import java.awt.Color;
 import org.playuniverse.minecraft.wildcard.core.IWildcardAdapter;
 
 import com.syntaxphoenix.syntaxapi.logging.color.ColorTools;
-import com.syntaxphoenix.syntaxapi.utils.java.lang.StringBuilder;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -32,8 +31,7 @@ public final class ComponentParser {
         TextComponent component = new TextComponent();
         Color color = defaultColor;
         adapter.applyColor(component, color);
-        final StringBuilder builder = new StringBuilder();
-        final StringBuilder hex = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         final char[] chars = richString.toCharArray();
         for (int index = 0; index < chars.length; index++) {
             final char chr = chars[index];
@@ -51,7 +49,8 @@ public final class ComponentParser {
                     if (builder.length() > 0) {
                         final TextComponent old = component;
                         component = new TextComponent(old);
-                        old.setText(builder.toStringClear());
+                        old.setText(builder.toString());
+                        builder = new StringBuilder();
                         array.add(old);
                     }
                     if (format.isFormat()) {
@@ -84,10 +83,11 @@ public final class ComponentParser {
                     adapter.applyColor(component, format.getColor());
                     continue;
                 }
+                StringBuilder hex = new StringBuilder();
                 for (int idx = index + 2; idx <= index + 7; idx++) {
                     final char hch = chars[idx];
                     if (hch >= 'A' && hch <= 'Z') {
-                        hex.append(hch + 32);
+                        hex.append((char) (hch + 32));
                         continue;
                     }
                     if (hch >= 'a' && hch <= 'z' || hch >= '0' && hch <= '9') {
@@ -96,24 +96,36 @@ public final class ComponentParser {
                     }
                     break;
                 }
-                if (hex.length() != 6 || hex.length() != 3) {
+                if (!(hex.length() == 6 || hex.length() == 3)) {
                     builder.append(chr);
                     continue;
                 }
-                if (hex.length() == 6) {
-                    index += 7;
-                    if (builder.length() > 0) {
-                        final TextComponent old = component;
-                        component = new TextComponent(old);
-                        old.setText(builder.toStringClear());
-                        array.add(old);
-                    }
-                    color = ColorTools.hex2rgb(hex.toStringClear());
-                    adapter.applyColor(component, color);
-                    continue;
+                String hexCode = hex.toString();
+                if (hexCode.length() == 3) {
+                    index -= 3;
+                    hex = new StringBuilder();
+                    hex.append(hexCode.charAt(0)).append(hexCode.charAt(0));
+                    hex.append(hexCode.charAt(1)).append(hexCode.charAt(1));
+                    hex.append(hexCode.charAt(2)).append(hexCode.charAt(2));
+                    hexCode = hex.toString();
                 }
+                index += 7;
+                if (builder.length() > 0) {
+                    final TextComponent old = component;
+                    component = new TextComponent(old);
+                    old.setText(builder.toString());
+                    builder = new StringBuilder();
+                    array.add(old);
+                }
+                color = ColorTools.hex2rgb(hexCode);
+                adapter.applyColor(component, color);
+                continue;
             }
             builder.append(chr);
+        }
+        if (builder.length() > 0) {
+            component.setText(builder.toString());
+            array.add(component);
         }
         return array.asArray(TextComponent[]::new);
     }

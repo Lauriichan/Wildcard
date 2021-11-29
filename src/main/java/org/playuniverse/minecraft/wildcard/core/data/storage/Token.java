@@ -20,7 +20,7 @@ public final class Token {
     private int uses;
 
     public Token(final UUID owner, final String token, final int uses, final OffsetDateTime expires) {
-        this.expires = Objects.requireNonNull(expires);
+        this.expires = expires;
         this.token = Objects.requireNonNull(token);
         this.owner = Objects.requireNonNull(owner);
         this.uses = uses;
@@ -35,7 +35,7 @@ public final class Token {
     }
 
     public String getExpiresAsString() {
-        return FORMATTER.format(expires);
+        return expires == null ? "N/A" : FORMATTER.format(expires);
     }
 
     public UUID getOwner() {

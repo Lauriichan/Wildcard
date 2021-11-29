@@ -168,7 +168,6 @@ public final class WebControl extends WebRedirectHandler {
         }
 
         final WebSender sender = new WebSender(httpSender, session);
-        System.out.println(data.getType());
         if (data.getType() == RequestType.GET) {
             return super.handleRequest(sender, writer, data);
         }

@@ -19,6 +19,7 @@ import org.playuniverse.minecraft.wildcard.spigot.command.SpigotCommand;
 import org.playuniverse.minecraft.wildcard.spigot.inject.SpigotCommands;
 import org.playuniverse.minecraft.wildcard.spigot.listener.PlayerListener;
 
+import com.syntaxphoenix.syntaxapi.json.io.JsonWriter;
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
 
 public final class WildcardSpigot extends JavaPlugin implements IWildcardPlugin {
@@ -29,7 +30,6 @@ public final class WildcardSpigot extends JavaPlugin implements IWildcardPlugin 
     private final SpigotExecutor executor = new SpigotExecutor(this);
     private final Container<SpigotService> service = Container.of();
 
-    private boolean failed = false;
     private boolean setup = false;
 
     public WildcardSpigot() {
@@ -44,10 +44,10 @@ public final class WildcardSpigot extends JavaPlugin implements IWildcardPlugin 
     @Override
     public void onEnable() {
         if (!core.enable()) {
-            failed = true;
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        JsonWriter.class.getClass();
         onSetup();
     }
 
@@ -66,8 +66,6 @@ public final class WildcardSpigot extends JavaPlugin implements IWildcardPlugin 
     @Override
     public void onDisable() {
         core.disable();
-        if (failed) {
-        }
     }
 
     @Override
