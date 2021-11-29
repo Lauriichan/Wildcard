@@ -62,7 +62,7 @@ public final class WildcardCommand implements IBasicCommand {
         final BaseInfo info = context.getSource();
         for(String key : helpMessages.keySet()) {
             Permission permission = helpMessages.get(key);
-            if(permission != null && info.isPermitted(permission)) {
+            if(permission != null && !info.isPermitted(permission)) {
                 continue;
             }
             info.send(key);

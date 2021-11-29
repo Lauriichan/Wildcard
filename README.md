@@ -8,6 +8,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
+  <a href="https://github.comLauriichan/Wildcard">
+    <img src="design/Scroll.png" alt="Logo" width="96" height="96"/>
+  </a>
 
   <h3 align="center">Wildcard</h3>
 

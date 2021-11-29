@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.playuniverse.minecraft</groupId>
     <artifactId>wildcard</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>Wildcard</name>
 
     <properties>
@@ -184,12 +184,12 @@
                             <shadedPattern>${project.groupId}.shaded.mysql</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>org.sqlite</pattern>
-                            <shadedPattern>${project.groupId}.shaded.sqlite</shadedPattern>
+                            <pattern>org.apache.commons.io</pattern>
+                            <shadedPattern>${project.groupId}.shaded.commons.io</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>org.apache.commons</pattern>
-                            <shadedPattern>${project.groupId}.shaded.commons</shadedPattern>
+                            <pattern>org.apache.commons.codec</pattern>
+                            <shadedPattern>${project.groupId}.shaded.commons.codec</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.syntaxphoenix.syntaxapi</pattern>
