@@ -89,7 +89,7 @@ public final class WebControl extends WebRedirectHandler {
     public void load() {
         exit0();
         final int port = settings.getInteger("port", 80);
-        final String hostRaw = settings.getString("host");
+        final String hostRaw = settings.getString("host", "localhost");
         final InetAddress host = resolveHost(hostRaw);
         if (host == null) {
             core.getLogger().log(LogTypeId.WARNING, "Couldn't resolve host '" + hostRaw + "'!");
@@ -174,8 +174,16 @@ public final class WebControl extends WebRedirectHandler {
         if (!String.class.isAssignableFrom(((CustomRequestData<?>) data.getData()).getType())) {
             throw new IllegalArgumentException("Unknown type");
         }
-        commandHandler.call(getDirectory().get(), sender, writer, data, data.getData().getValue().toString());
-        return true;
+        if (session.isUsed()) {
+            return true;
+        }
+        session.setUsed(true);
+        try {
+            commandHandler.call(getDirectory().get(), sender, writer, data, data.getData().getValue().toString());
+            return true;
+        } finally {
+            session.setUsed(false);
+        }
     }
 
 }

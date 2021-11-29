@@ -5,9 +5,11 @@ import java.time.format.DateTimeFormatter;
 
 public final class TimeHelper {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-HH_mm-ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-    private TimeHelper() {}
+    private TimeHelper() {
+
+    }
 
     public static OffsetDateTime fromString(String string) {
         return string == null ? null : OffsetDateTime.parse(string, FORMATTER);

@@ -258,6 +258,10 @@ public class MySQLDatabase extends Database implements ITickReceiver {
     @Override
     public CompletableFuture<Void> updateToken(final Token token) {
         return CompletableFuture.runAsync(() -> {
+            if (token.getUses() == 0) {
+                deleteToken(token).join();
+                return;
+            }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(updateToken);
                 statement.setInt(1, token.getUses());

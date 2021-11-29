@@ -49,7 +49,8 @@ public class TokenLoginCommand implements ICommand {
         }
 
         final String username;
-        if (!(reader.skipWhitespace().hasNext() && "username".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext() && !(username = reader.readUnquoted()).equals("token"))) {
+        if (!(reader.skipWhitespace().hasNext() && "username".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext()
+            && !(username = reader.readUnquoted()).equals("token"))) {
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onUserNotSet).code(ResponseCode.OK).write(source.getWriter());
@@ -59,7 +60,7 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         }
-        
+
         if (!(reader.skipWhitespace().hasNext() && "token".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext())) {
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
@@ -70,9 +71,10 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         }
-        
+
         final String token = reader.readUnquoted();
         if (token.length() != 40) {
+            System.out.println(token.length() + " hmmm / " + token);
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onTokenInvalid).code(ResponseCode.OK).write(source.getWriter());
@@ -106,16 +108,15 @@ public class TokenLoginCommand implements ICommand {
             return 0;
         }
         final Database database = container.get();
-        
+
         try {
             new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.PROCESSING).write(source.getWriter());
         } catch (final IOException exp) {
             source.getLogger().log(LogTypeId.WARNING, "Failed to send web answer on TokenLogin");
             throw new RuntimeException(exp);
         }
-        
+
         final RequestResult result = database.allow(target, token).join();
-        
         switch (result) {
         case FAILED:
             try {
@@ -141,9 +142,10 @@ public class TokenLoginCommand implements ICommand {
         final String nameOut = source.getCore().getPlugin().getService().getName(target);
         source.getSender().getSession().getData().set("login.success", nameOut == null || nameOut.isBlank() ? username : nameOut,
             IDataType.STRING);
+        System.out.println(source.getSender().getSession().getData().get("login.success", IDataType.STRING));
         try {
-            new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.TEMPORARY_REDIRECT)
-                .header("Location", source.getHost() + source.getRequest().getPathAsString()).write(source.getWriter());
+            new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.SEE_OTHER).header("Location", source.getHost() + "success")
+                .write(source.getWriter());
         } catch (final IOException exp) {
             source.getLogger().log(LogTypeId.WARNING, "Failed to send web answer on TokenLogin");
             throw new RuntimeException(exp);

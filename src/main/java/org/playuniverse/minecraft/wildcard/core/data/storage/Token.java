@@ -53,7 +53,11 @@ public final class Token {
     public int use() {
         lock.lock();
         try {
-            return isExpired() ? -1 : --uses;
+            if(isExpired()) {
+                return -1;
+            }
+            uses -= 1;
+            return uses;
         } finally {
             lock.unlock();
         }

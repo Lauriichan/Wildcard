@@ -36,7 +36,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.pool.HikariPool;
 
 public class SQLiteDatabase extends Database implements ITickReceiver {
-    
+
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS %s%s";
 
     private static final String SELECT_TOKEN_BY_USER = "SELECT * FROM %s WHERE Owner = ?";
@@ -126,11 +126,10 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     private void setup() throws SQLException {
         try (Connection connection = pool.getConnection()) {
             connection.prepareStatement(String.format(CREATE_TABLE, tokenTable,
-                "(Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires VARCHAR(16), CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner))"))
+                "(Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires VARCHAR(22), CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner))"))
                 .executeUpdate();
-            connection
-                .prepareStatement(
-                    String.format(CREATE_TABLE, historyTable, "(User BINARY(16) NOT NULL, TokenOwner BINARY(16), Time VARCHAR(16) NOT NULL)"))
+            connection.prepareStatement(
+                String.format(CREATE_TABLE, historyTable, "(User BINARY(16) NOT NULL, TokenOwner BINARY(16), Time VARCHAR(22) NOT NULL)"))
                 .executeUpdate();
         }
     }
@@ -228,7 +227,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
         }, executor);
     }
-    
+
     // TODO: Find out why the hell the token is not valid
     // b58d34472d09fd1e1b0adb0eaf4a250becc9661d
 
@@ -237,7 +236,6 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
         return getToken(uniqueId)
             .thenComposeAsync(token -> token != null ? CompletableFuture.completedStage(token) : CompletableFuture.supplyAsync(() -> {
                 byte[] tokenRaw = DigestUtils.sha1(tokenGen.makeKey(12));
-                System.out.println(tokenRaw.length);
                 try (Connection connection = pool.getConnection()) {
                     PreparedStatement statement = connection.prepareStatement(selectTokenByToken);
                     statement.setBytes(1, tokenRaw);
@@ -265,6 +263,10 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     @Override
     public CompletableFuture<Void> updateToken(final Token token) {
         return CompletableFuture.runAsync(() -> {
+            if (token.getUses() == 0) {
+                deleteToken(token).join();
+                return;
+            }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(updateToken);
                 statement.setInt(1, token.getUses());
