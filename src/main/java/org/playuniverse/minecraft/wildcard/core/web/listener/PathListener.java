@@ -22,7 +22,6 @@ public final class PathListener implements EventListener {
             return;
         }
         event.setCancelled(data.get("login.success", IDataType.STRING).isBlank());
-        data.remove("login.success");
     }
 
 }

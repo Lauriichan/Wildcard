@@ -27,7 +27,8 @@ public final class ComplexPathHandler implements ISpecialPathHandler {
     public void handleWeb(final File directory, final WebSender sender, final HttpWriter writer, final ReceivedRequest data)
         throws Exception {
         File file = new File(directory, data.getPathAsString()).getCanonicalFile();
-        if(!file.getParent().startsWith(directory.getCanonicalPath())) {
+        String directoryPath = directory.getCanonicalPath();
+        if(!file.getCanonicalPath().equals(directoryPath) && !file.getParent().startsWith(directoryPath)) {
             new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.FORBIDDEN).write(writer);
             return;
         }

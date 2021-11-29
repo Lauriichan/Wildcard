@@ -53,24 +53,31 @@
     "command.history.get.other": "$prefix Versuche den Verlauf von dem Nutzer '&#DB0F60$user&7' aufzurufen...",
     "command.history.get.self": "$prefix Versuche deinen Verlauf abzurufen...",
     "command.history.self": "dir",
-    "command.history.list.start": "$plugin.name &8- &7Verlauf von &#DB0F60W$name",
+    "command.history.list.start": "$plugin.name &8- &7Verlauf von &#DB0F60$name",
     "command.history.list.item.deny": [
-      "&8[&#DB0F60W$idx&7] \u00BB &7",
-      " $idxSize    &7Sperr Datum: &#DB0F60W$time"
+      "&8[&#DB0F60$idx&7] \u00BB &7",
+      " $idxSize    &7Sperr Datum: &#DB0F60$time"
     ],
     "command.history.list.item.allow": [
-      "&8[&#DB0F60W$idx&7] \u00BB &7",
-      " $idxSize    &7Token Besitzer: &#DB0F60W$ownerName &8(&7$onwerId&8)",
-      " $idxSize    &7Freischalt Datum: &#DB0F60W$time"
+      "&8[&#DB0F60$idx&7] \u00BB &7",
+      " $idxSize    &7Token Besitzer: &#DB0F60$ownerName &8(&7$onwerId&8)",
+      " $idxSize    &7Freischalt Datum: &#DB0F60$time"
     ],
     "command.history.list.page.next": "&7Seite $page &8\\u00BB",
     "command.history.list.page.info": " &8[ &7Seite $page &8] ",
     "command.history.list.page.previous": "&8\u00AB &7Seite $page",
-    "command.history.list.end": "$plugin.name &8- &7Verlauf von &#DB0F60W$name",
+    "command.history.list.end": "$plugin.name &8- &7Verlauf von &#DB0F60$name",
     "command.action.token.copy": "&7Drücke hier um den Token zu kopieren",
     "command.action.token.get": "&7Drücke hier um die Informationen des Tokens aufzurufen",
     "command.action.page.next": "&7Drücke hier um auf die nächste Seite zu kommen",
     "command.action.page.previous": "&7Drücke hier um auf die vorherige Seite zu kommen",
+    "command.help.get": "&#DB0F60/wildcard get &#D43F7A(<name>) &8- &7Erhalte den Token von dir oder eines Nutzers falls vorhanden.",
+    "command.help.help": "&#DB0F60/wildcard help &8- &7Rufe diese Liste auf.",
+    "command.help.deny": "&#DB0F60/wildcard deny &#D43F7A<name> &8- &7Entferne einen Nutzer von der Gästeliste.",
+    "command.help.allow": "&#DB0F60/wildcard allow &#D43F7A<name> &8- &7Füge einen Nutzer auf die Gästeliste hinzu.",
+    "command.help.create": "&#DB0F60/wildcard create &#D43F7A(<name>) (<tage>) (<anzahl>) &8- &7Erstelle einen Token für dich oder einen Nutzer.",
+    "command.help.reload": "&#DB0F60/wildcard reload &8- &7Lade das Plugin neu.",
+    "command.help.history": "&#DB0F60/wildcard history &#D43F7A(<name>) (<seite>) &8- &7Erhalte den Gästelisten Verlauf von dir oder einem Nutzer auf.",
     "webpage.title.submit": "Wildcard Freischalten",
     "webpage.title.success": "Wildcard Freigeschaltet",
     "webpage.header": "Wildcard System",

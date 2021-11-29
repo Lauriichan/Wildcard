@@ -1,6 +1,9 @@
 package org.playuniverse.minecraft.wildcard.core.command;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.playuniverse.minecraft.wildcard.core.MessageAdapter;
@@ -25,6 +28,20 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public final class WildcardCommand implements IBasicCommand {
+    
+    private final Map<String, Permission> helpMessages;
+    
+    public WildcardCommand() {
+        HashMap<String, Permission> helpMessages = new HashMap<>();
+        helpMessages.put("command.help.get", null);
+        helpMessages.put("command.help.help", null);
+        helpMessages.put("command.help.deny", Permission.COMMAND_DENY);
+        helpMessages.put("command.help.allow", Permission.COMMAND_ALLOW);
+        helpMessages.put("command.help.create", Permission.COMMAND_CREATE);
+        helpMessages.put("command.help.reload", Permission.COMMAND_RELOAD);
+        helpMessages.put("command.help.history", Permission.COMMAND_HISTORY);
+        this.helpMessages = Collections.unmodifiableMap(helpMessages);
+    }
 
     @Override
     @Command(name = "wildcard", aliases = "card")
@@ -35,10 +52,23 @@ public final class WildcardCommand implements IBasicCommand {
         root.putChild(new ExecutionNode<>("create", this::onCreate));
         root.putChild(new ExecutionNode<>("allow", this::onAllow));
         root.putChild(new ExecutionNode<>("deny", this::onDeny));
+        root.putChild(new ExecutionNode<>("help", this::onHelp));
         root.putChild(new ExecutionNode<>("get", this::onGet));
-        root.setExecution("get");
+        root.setExecution("help");
         return root;
     }
+    
+    private void onHelp(final CommandContext<BaseInfo> context) {
+        final BaseInfo info = context.getSource();
+        for(String key : helpMessages.keySet()) {
+            Permission permission = helpMessages.get(key);
+            if(permission != null && info.isPermitted(permission)) {
+                continue;
+            }
+            info.send(key);
+        }
+    }
+    
 
     private void onHistory(final CommandContext<BaseInfo> context) {
         final BaseInfo info = context.getSource();

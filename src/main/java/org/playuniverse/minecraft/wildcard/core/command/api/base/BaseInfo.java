@@ -134,7 +134,7 @@ public abstract class BaseInfo {
     }
 
     public final boolean isPermitted(final IPermission permission) {
-        return isPermitted(permission.id());
+        return isPermitted("wildcard.*") || isPermitted(permission.id());
     }
 
 }

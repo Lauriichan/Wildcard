@@ -26,6 +26,7 @@ public final class PlaceholderListener implements EventListener {
             if (event.hasPlaceholder("player.name")) {
                 event.getPlaceholder("player.name").setValue(data.get("login.success", IDataType.STRING));
             }
+            data.remove("login.success");
         }
     }
 
