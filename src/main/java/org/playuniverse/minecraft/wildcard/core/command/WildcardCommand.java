@@ -140,8 +140,6 @@ public final class WildcardCommand implements IBasicCommand {
             }
             OffsetDateTime time = OffsetDateTime.now();
             
-            // TODO: Find out why the fuck this piece of shit isn't parsing correctly
-            
             int expires = 7;
             if (reader.skipWhitespace().hasNext() && reader.testInt()) {
                 expires = Math.min(365, reader.parseInt());

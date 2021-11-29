@@ -228,9 +228,6 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
         }, executor);
     }
 
-    // TODO: Find out why the hell the token is not valid
-    // b58d34472d09fd1e1b0adb0eaf4a250becc9661d
-
     @Override
     public CompletableFuture<Token> getTokenOrGenerate(final UUID uniqueId, final int uses, final OffsetDateTime expires) {
         return getToken(uniqueId)
