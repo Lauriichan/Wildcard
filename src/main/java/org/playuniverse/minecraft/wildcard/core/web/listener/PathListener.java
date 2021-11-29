@@ -13,7 +13,7 @@ public final class PathListener implements EventListener {
     @EventHandler
     public void onPathRequest(final PathRequestEvent event) {
         final WebSender sender = event.getSender();
-        if (!event.getRequest().getPathAsString().contains("success")) {
+        if (!event.getType().has("html") || !event.getRequest().getPathAsString().contains("success")) {
             return;
         }
         final NbtContainer data = sender.getSession().getData();
@@ -22,6 +22,7 @@ public final class PathListener implements EventListener {
             return;
         }
         event.setCancelled(data.get("login.success", IDataType.STRING).isBlank());
+        data.remove("login.success");
     }
 
 }

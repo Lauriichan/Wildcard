@@ -1,20 +1,22 @@
 /* Center in middle of screen */
 .center {
-    top: 45%;
-    left: 50%;
+    width: 50vw;
+    height: 50vh;
     position: absolute;
-    transform: translate(-50%, -50%);
-    color: greenyellow;
-}  
+    transform: translate(50%, 75%);
+    text-align: center;
+    justify-content: center;
+}
 .center-head {
     position: absolute;
     top: 20%;
     left: 50%;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -50%);
+    color:lightgray;
 }
 body {
     background-color: rgb(49, 46, 46);
-    color: lightgray;
+    color:greenyellow;
     font-family: 'Courier New', Courier, monospace;
     font-style: bold;
 }
