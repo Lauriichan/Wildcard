@@ -1,5 +1,6 @@
 package org.playuniverse.minecraft.wildcard.core;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ import org.playuniverse.minecraft.wildcard.core.web.listener.PathListener;
 import org.playuniverse.minecraft.wildcard.core.web.listener.PlaceholderListener;
 
 import com.syntaxphoenix.syntaxapi.event.EventManager;
+import com.syntaxphoenix.syntaxapi.json.JsonObject;
 import com.syntaxphoenix.syntaxapi.logging.ILogger;
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
@@ -92,6 +94,11 @@ public final class WildcardCore {
         if (control.isEmpty()) {
             control.replace(new WebControl(this));
         }
+        try {
+            JsonIO.WRITER.toString(new JsonObject());
+        } catch (IOException e) {
+            // Ignore
+        }
     }
 
     public boolean reload() {
@@ -115,6 +122,8 @@ public final class WildcardCore {
         cacheTimer.stop();
         control.ifPresent(WebControl::exit);
         database.ifPresent(Database::close);
+        injections.ifPresent(Injections::uninjectAll);
+        classProvider.ifPresent(provider -> provider.getReflection().clear());
         Singleton.get(Settings.class).save();
     }
 

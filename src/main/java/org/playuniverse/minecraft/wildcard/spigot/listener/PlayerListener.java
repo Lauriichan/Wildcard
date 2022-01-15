@@ -2,6 +2,7 @@ package org.playuniverse.minecraft.wildcard.spigot.listener;
 
 import java.util.UUID;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
@@ -13,7 +14,6 @@ import org.playuniverse.minecraft.wildcard.core.settings.Translation;
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
 
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.event.EventHandler;
 
 public final class PlayerListener extends ConnectionListener implements Listener {
 
