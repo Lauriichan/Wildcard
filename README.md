@@ -107,7 +107,7 @@ Distributed under the GPLv3 License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Discord - Lauriichan#1515
+Discord - Lauriichan#1515 (I will not provide support via Discord)
 
 Project Link: [https://github.com/Lauriichan/Wildcard](https://github.com/Lauriichan/Wildcard)
 
