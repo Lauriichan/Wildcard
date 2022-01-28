@@ -19,6 +19,7 @@ import org.playuniverse.minecraft.wildcard.core.data.storage.mysql.MySQLDatabase
 import org.playuniverse.minecraft.wildcard.core.data.storage.sqlite.SQLiteDatabase;
 import org.playuniverse.minecraft.wildcard.core.settings.DatabaseSettings;
 import org.playuniverse.minecraft.wildcard.core.settings.PluginSettings;
+import org.playuniverse.minecraft.wildcard.core.settings.RatelimitSettings;
 import org.playuniverse.minecraft.wildcard.core.settings.Translation;
 import org.playuniverse.minecraft.wildcard.core.settings.WebSettings;
 import org.playuniverse.minecraft.wildcard.core.util.JavaLogger;
@@ -88,6 +89,8 @@ public final class WildcardCore {
         JsonIO.PARSER.getClass();
         JsonIO.WRITER.getClass();
         Singleton.get(Settings.class).load();
+        Singleton.get(RatelimitSettings.class).load();
+        Singleton.get(DatabaseSettings.class).load();
         Singleton.get(PluginSettings.class).load();
         Singleton.get(WebSettings.class).load();
         Translation.load();

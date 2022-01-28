@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.playuniverse.minecraft.wildcard.core.WildcardCore;
 import org.playuniverse.minecraft.wildcard.core.data.container.api.IDataType;
 import org.playuniverse.minecraft.wildcard.core.data.container.nbt.NbtContainer;
+import org.playuniverse.minecraft.wildcard.core.settings.RatelimitSettings;
 import org.playuniverse.minecraft.wildcard.core.settings.WebSettings;
 import org.playuniverse.minecraft.wildcard.core.util.NamedThreadFactory;
 import org.playuniverse.minecraft.wildcard.core.util.Resources;
@@ -43,6 +44,8 @@ public final class WebControl extends WebRedirectHandler {
     private final RequestCommandHandler commandHandler;
 
     private final WebSettings settings = Singleton.get(WebSettings.class);
+    private final RatelimitSettings ratelimit = Singleton.get(RatelimitSettings.class);
+    
     private final WildcardCore core;
 
     private final Container<String> hostPath = Container.of();
@@ -88,6 +91,7 @@ public final class WebControl extends WebRedirectHandler {
 
     public void load() {
         exit0();
+        loadRatelimit();
         final int port = settings.getInteger("port", 80);
         final String hostRaw = settings.getString("host", "localhost");
         final InetAddress host = resolveHost(hostRaw);
@@ -111,6 +115,11 @@ public final class WebControl extends WebRedirectHandler {
             core.getLogger().log(LogTypeId.WARNING, "Failed to start WebServer!");
             core.getLogger().log(LogTypeId.WARNING, exp);
         }
+    }
+    
+    private void loadRatelimit() {
+        ratelimit.getBoolean("enabled", true);
+        ratelimit.getInteger("attempts", 5);
     }
 
     private InetAddress resolveHost(final String host) {

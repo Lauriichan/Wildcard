@@ -12,10 +12,13 @@ import org.playuniverse.minecraft.wildcard.core.command.api.nodes.RootNode;
 import org.playuniverse.minecraft.wildcard.core.data.container.api.IDataType;
 import org.playuniverse.minecraft.wildcard.core.data.storage.Database;
 import org.playuniverse.minecraft.wildcard.core.data.storage.RequestResult;
+import org.playuniverse.minecraft.wildcard.core.settings.RatelimitSettings;
+import org.playuniverse.minecraft.wildcard.core.util.Singleton;
 import org.playuniverse.minecraft.wildcard.core.util.placeholder.ForkTemplate;
 import org.playuniverse.minecraft.wildcard.core.util.placeholder.Template;
 import org.playuniverse.minecraft.wildcard.core.web.command.impl.ICommand;
 import org.playuniverse.minecraft.wildcard.core.web.command.impl.WebSource;
+import org.playuniverse.minecraft.wildcard.core.web.session.ClientSession;
 import org.playuniverse.minecraft.wildcard.core.web.util.PageInjectPlaceholderEvent;
 import org.playuniverse.minecraft.wildcard.core.web.util.PlaceholderFileAnswer;
 
@@ -26,6 +29,8 @@ import com.syntaxphoenix.syntaxapi.net.http.StandardNamedType;
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
 
 public class TokenLoginCommand implements ICommand {
+
+    private final RatelimitSettings settings = Singleton.get(RatelimitSettings.class);
 
     @Override
     @Command(name = "/index")
@@ -48,9 +53,26 @@ public class TokenLoginCommand implements ICommand {
             return 0;
         }
 
+        final ClientSession session = source.getSender().getSession();
+        final int rate = session.getData().get("login.rate", IDataType.INTEGER);
+        final boolean enabled = settings.getBoolean("enabled");
+        final int tries = settings.getInteger("attempts");
+        if (enabled && rate > tries) {
+            try {
+                new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
+                    source.getCore().getEventManager(), (event) -> onRatelimited(event, rate, tries)).code(ResponseCode.TOO_MANY_REQUESTS)
+                        .write(source.getWriter());
+            } catch (final IOException exp) {
+                source.getLogger().log(LogTypeId.WARNING, "Failed to send web answer on TokenLogin");
+                throw new RuntimeException(exp);
+            }
+            return 0;
+        }
+
         final String username;
         if (!(reader.skipWhitespace().hasNext() && "username".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext()
             && !(username = reader.readUnquoted()).equals("token"))) {
+            session.getData().set("login.rate", rate + 1, IDataType.INTEGER); // Update because of fail
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onUserNotSet).code(ResponseCode.OK).write(source.getWriter());
@@ -62,6 +84,7 @@ public class TokenLoginCommand implements ICommand {
         }
 
         if (!(reader.skipWhitespace().hasNext() && "token".equals(reader.readUnquoted()) && reader.skipWhitespace().hasNext())) {
+            session.getData().set("login.rate", rate + 1, IDataType.INTEGER); // Update because of fail
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onTokenNotSet).code(ResponseCode.OK).write(source.getWriter());
@@ -74,7 +97,7 @@ public class TokenLoginCommand implements ICommand {
 
         final String token = reader.readUnquoted();
         if (token.length() != 40) {
-            System.out.println(token.length() + " hmmm / " + token);
+            session.getData().set("login.rate", rate + 1, IDataType.INTEGER); // Update because of fail
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onTokenInvalid).code(ResponseCode.OK).write(source.getWriter());
@@ -87,6 +110,7 @@ public class TokenLoginCommand implements ICommand {
 
         final UUID target = source.getCore().getPlugin().getService().getUniqueId(username);
         if (target == null) {
+            session.getData().set("login.rate", rate + 1, IDataType.INTEGER); // Update because of fail
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onUserInvalid).code(ResponseCode.OK).write(source.getWriter());
@@ -99,6 +123,7 @@ public class TokenLoginCommand implements ICommand {
 
         final Container<Database> container = source.getCore().getDatabase();
         if (container.isEmpty()) {
+            // Don't update ratelimit as user can't do anything against that
             try {
                 new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.SERVICE_UNAVAILABLE).write(source.getWriter());
             } catch (final IOException exp) {
@@ -119,6 +144,7 @@ public class TokenLoginCommand implements ICommand {
         final RequestResult result = database.allow(target, token).join();
         switch (result) {
         case FAILED:
+            session.getData().set("login.rate", rate + 1, IDataType.INTEGER); // Update because of fail
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onTokenInvalid).code(ResponseCode.OK).write(source.getWriter());
@@ -128,6 +154,7 @@ public class TokenLoginCommand implements ICommand {
             }
             return 0;
         case KNOWN:
+            session.getData().set("login.rate", rate + 1, IDataType.INTEGER); // Update because of fail
             try {
                 new PlaceholderFileAnswer(file, StandardNamedType.HTML, source.getSender(), source.getRequest(),
                     source.getCore().getEventManager(), this::onUserKnown).code(ResponseCode.OK).write(source.getWriter());
@@ -150,6 +177,12 @@ public class TokenLoginCommand implements ICommand {
             throw new RuntimeException(exp);
         }
         return 0;
+    }
+
+    private void onRatelimited(final PageInjectPlaceholderEvent event, final int requests, final int tries) {
+        final Template output = new ForkTemplate(event.getTemplate("popup"), "popup-user");
+        output.getPlaceholder("error").setValue("Can't process your request, please try again later.");
+        event.setTemplate(output);
     }
 
     private void onUserNotSet(final PageInjectPlaceholderEvent event) {
