@@ -1,4 +1,4 @@
-main: ${project.groupId}.${project.artifactId}.bungee.${project.name}Bungee
+main: ${project.groupId}.${wildcard.id}.bungee.${wildcard.name}Bungee
 name: ${project.name}
 version: ${project.version}
 api-version: 1.13

@@ -7,7 +7,6 @@
     </parent>
     <artifactId>wildcard-core</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>com.syntaxphoenix.syntaxapi</groupId>
@@ -55,16 +54,19 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.15</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Database -->
@@ -72,6 +74,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.6</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Connection Pool-->
@@ -79,6 +82,7 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SLF4j -->
@@ -86,6 +90,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.30</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

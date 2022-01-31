@@ -5,6 +5,12 @@
     <version>2.0.0</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <wildcard.id>wildcard</wildcard.id>
+        <wildcard.name>Wildcard</wildcard.name>
+        <wildcard.author>Lauriichan</wildcard.author>
+    </properties>
+
     <modules>
         <module>wildcard-core</module>
         <module>wildcard-vanilla</module>
