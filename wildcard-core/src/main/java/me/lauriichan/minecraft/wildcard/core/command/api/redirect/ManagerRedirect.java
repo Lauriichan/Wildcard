@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import me.lauriichan.minecraft.wildcard.core.command.api.CommandManager;
+import me.lauriichan.minecraft.wildcard.core.command.api.StringReader;
 import me.lauriichan.minecraft.wildcard.core.command.api.nodes.RootNode;
 
 public class ManagerRedirect<S> extends AbstractRedirect<S> {
@@ -34,8 +35,12 @@ public class ManagerRedirect<S> extends AbstractRedirect<S> {
     }
 
     @Override
-    public List<String> handleNullComplete(final S source, final String[] args) {
-        return args.length <= 1 ? collectCommands() : null;
+    public List<String> handleNullComplete(final S source, final String args) {
+        StringReader reader = new StringReader(args).skipWhitespace();
+        if (!reader.hasNext()) {
+            reader.read();
+        }
+        return !reader.hasNext() ? collectCommands() : null;
     }
 
     @Override
