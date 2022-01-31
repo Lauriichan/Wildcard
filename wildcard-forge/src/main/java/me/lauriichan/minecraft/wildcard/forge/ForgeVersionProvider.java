@@ -1,18 +1,16 @@
-package me.lauriichan.minecraft.wildcard.sponge;
+package me.lauriichan.minecraft.wildcard.forge;
 
-import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
-import org.spongepowered.api.MinecraftVersion;
-import org.spongepowered.api.Sponge;
-
-import com.syntaxphoenix.syntaxapi.utils.java.Strings;
+import com.mojang.bridge.game.GameVersion;
 
 import me.lauriichan.minecraft.wildcard.core.util.platform.PlatformType;
 import me.lauriichan.minecraft.wildcard.core.util.platform.Version;
 import me.lauriichan.minecraft.wildcard.core.util.platform.VersionProvider;
+import net.minecraft.util.MinecraftVersion;
 
-public final class SpongeVersionProvider extends VersionProvider {
+public final class ForgeVersionProvider extends VersionProvider {
 
     private static final TreeMap<Integer, Version> MAP = new TreeMap<>();
 
@@ -26,24 +24,20 @@ public final class SpongeVersionProvider extends VersionProvider {
 
     private final Version version;
 
-    public SpongeVersionProvider() {
-        MinecraftVersion minecraft = Sponge.platform().minecraftVersion();
+    public ForgeVersionProvider() {
         Version tmp = null;
-        if (Strings.isNumeric(minecraft.name())) {
-            Entry<Integer, Version> entry = MAP.floorEntry(minecraft.dataVersion().orElse(2586));
+        try {
+            GameVersion version = MinecraftVersion.tryDetectVersion();
+            Entry<Integer, Version> entry = MAP.floorEntry(version.getProtocolVersion());
             if (entry != null) {
                 tmp = entry.getValue();
             }
+        } catch (IllegalStateException ignore) {
         }
-        if(tmp == null) {
-            tmp = Version.fromString(minecraft.name());
+        if (tmp == null) {
+            tmp = new Version();
         }
         this.version = tmp;
-    }
-
-    @Override
-    public Version getServerVersion() {
-        return version;
     }
 
     @Override
@@ -52,8 +46,13 @@ public final class SpongeVersionProvider extends VersionProvider {
     }
 
     @Override
+    public Version getServerVersion() {
+        return version;
+    }
+
+    @Override
     public PlatformType getPlatform() {
-        return PlatformType.SPONGE;
+        return PlatformType.FORGE;
     }
 
 }
