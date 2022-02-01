@@ -72,6 +72,10 @@
 * [Bungeecord](https://github.com/SpigotMC/BungeeCord)
 * [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
 
+### Get on
+* [CurseForge (for Fabric / Forge) {Comming soon}]()
+* [Ore (for Sponge)](https://ore.spongepowered.org/Lauriichan/Wildcard)
+* [Spigot (for Spigot / BungeeCord)](https://www.spigotmc.org/resources/97996/)
 
 <!-- GETTING STARTED -->
 ## Getting Started
