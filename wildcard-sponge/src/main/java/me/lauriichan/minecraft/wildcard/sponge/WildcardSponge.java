@@ -2,7 +2,7 @@ package me.lauriichan.minecraft.wildcard.sponge;
 
 import java.io.File;
 import java.sql.DriverManager;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Server;
@@ -118,7 +118,7 @@ public final class WildcardSponge implements IWildcardPlugin {
     }
 
     @Override
-    public Executor getExecutor() {
+    public ExecutorService getExecutor() {
         return executor;
     }
 

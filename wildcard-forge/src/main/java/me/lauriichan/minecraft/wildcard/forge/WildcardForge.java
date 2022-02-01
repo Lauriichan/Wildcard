@@ -12,7 +12,7 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 
 import java.io.File;
 import java.sql.DriverManager;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.sqlite.JDBC;
@@ -116,7 +116,7 @@ public class WildcardForge implements IWildcardPlugin {
     }
 
     @Override
-    public Executor getExecutor() {
+    public ExecutorService getExecutor() {
         return executor;
     }
 

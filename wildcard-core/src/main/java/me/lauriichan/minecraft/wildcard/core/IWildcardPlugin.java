@@ -1,7 +1,7 @@
 package me.lauriichan.minecraft.wildcard.core;
 
 import java.io.File;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import me.lauriichan.minecraft.wildcard.core.command.api.base.BaseCommand;
 import me.lauriichan.minecraft.wildcard.core.command.api.base.BaseInfo;
@@ -23,7 +23,7 @@ public interface IWildcardPlugin {
 
     File getDataFolder();
 
-    Executor getExecutor();
+    ExecutorService getExecutor();
 
     WildcardCore getCore();
 

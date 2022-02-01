@@ -1,7 +1,7 @@
 package me.lauriichan.minecraft.wildcard.spigot;
 
 import java.io.File;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -81,7 +81,7 @@ public final class WildcardSpigot extends JavaPlugin implements IWildcardPlugin 
      */
 
     @Override
-    public Executor getExecutor() {
+    public ExecutorService getExecutor() {
         return executor;
     }
 

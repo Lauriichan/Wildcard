@@ -4,29 +4,30 @@
   "version": "${version}",
 
   "name": "Wildcard",
-  "description": "A Token based Whitelist to give away \"Keys\" to join your server",
+  "description": "",
   "authors": [
     "Lauriichan"
   ],
   "contact": {
-    "homepage": "https://github.com/Lauriichan/Wildcard"
+    "sources": "https://github.com/Wildcard/Lauriichan"
   },
 
-  "license": "TheUnlicense",
-  "icon": "<icon>",
+  "license": "GPLv3",
 
-  "environment": "*",
+  "environment": "SERVER",
   "entrypoints": {
     "server": [
-      "<mainClass>"
+      "me.lauriichan.minecraft.wildcard.fabric.WildcardFabric"
     ]
   },
   "mixins": [
-    "<mixins>"
+    "me.lauriichan.minecraft.wildcard.mixin.fabric.MinecraftServerAccessor",
+    "me.lauriichan.minecraft.wildcard.mixin.fabric.PlayerManagerMixin"
   ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
     "minecraft": "1.16.x"
-  }
+  },
+  "suggests": {}
 }

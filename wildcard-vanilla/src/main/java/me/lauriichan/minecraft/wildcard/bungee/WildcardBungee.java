@@ -1,7 +1,7 @@
 package me.lauriichan.minecraft.wildcard.bungee;
 
 import java.io.File;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
 
@@ -78,7 +78,7 @@ public final class WildcardBungee extends Plugin implements IWildcardPlugin {
      */
 
     @Override
-    public Executor getExecutor() {
+    public ExecutorService getExecutor() {
         return executor;
     }
 
