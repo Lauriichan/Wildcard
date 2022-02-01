@@ -44,7 +44,7 @@ public abstract class AbstractClassLookupCache<R extends ClassLookup> {
 
     @SuppressWarnings("unchecked")
     public Entry<String, R>[] entries() {
-        return cache.entrySet().toArray(Entry[]::new);
+        return cache.entrySet().toArray(new Entry[cache.size()]);
     }
 
     protected abstract R create(Class<?> clazz);

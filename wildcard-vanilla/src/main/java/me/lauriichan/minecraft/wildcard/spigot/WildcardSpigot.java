@@ -1,5 +1,6 @@
 package me.lauriichan.minecraft.wildcard.spigot;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 
 import org.bukkit.Bukkit;
@@ -97,6 +98,11 @@ public final class WildcardSpigot extends JavaPlugin implements IWildcardPlugin 
     @Override
     public IWildcardAdapter getAdapter() {
         return adapter;
+    }
+    
+    @Override
+    public File getJarFile() {
+        return getFile();
     }
 
 }

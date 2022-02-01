@@ -1,4 +1,4 @@
-package me.lauriichan.minecraft.wildcard.sponge.component;
+package me.lauriichan.minecraft.wildcard.forge.component;
 
 import java.awt.Color;
 import java.util.Objects;
@@ -8,16 +8,15 @@ import me.lauriichan.minecraft.wildcard.core.message.PlatformClickEvent;
 import me.lauriichan.minecraft.wildcard.core.message.PlatformComponent;
 import me.lauriichan.minecraft.wildcard.core.message.PlatformHoverEvent;
 import me.lauriichan.minecraft.wildcard.core.message.hover.HoverText;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
-public final class SpongeComponent extends PlatformComponent {
+public final class ForgeComponent extends PlatformComponent {
 
-    private final SpongeComponentAdapter adapter;
+    private final ForgeComponentAdapter adapter;
 
     private final boolean[] formats = new boolean[] {
         false,
@@ -33,7 +32,7 @@ public final class SpongeComponent extends PlatformComponent {
     private PlatformClickEvent clickEvent;
     private PlatformHoverEvent hoverEvent;
 
-    public SpongeComponent(final SpongeComponentAdapter adapter) {
+    public ForgeComponent(final ForgeComponentAdapter adapter) {
         this.adapter = adapter;
     }
 
@@ -119,43 +118,46 @@ public final class SpongeComponent extends PlatformComponent {
     }
 
     @Override
-    public Component getHandle() {
-        TextComponent component = Component.empty();
+    public ITextComponent getHandle() {
+        StringTextComponent component = new StringTextComponent(text);
+        Style style = Style.EMPTY;
         if (color != null) {
-            component.color(TextColor.color(color.getRGB()));
+            style = style.withColor(net.minecraft.util.text.Color.fromRgb(color.getRGB()));
         }
         if (clickEvent != null) {
             switch (clickEvent.getAction()) {
             case COPY_TO_CLIPBOARD:
-                component.clickEvent(ClickEvent.copyToClipboard(clickEvent.getValue()));
+                style = style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, clickEvent.getValue()));
                 break;
             case RUN_COMMAND:
-                component.clickEvent(ClickEvent.runCommand(clickEvent.getValue()));
+                style = style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, clickEvent.getValue()));
                 break;
             }
         }
         if (hoverEvent != null) {
             switch (hoverEvent.getAction()) {
             case SHOW_TEXT:
-                component.hoverEvent(HoverEvent.showText(adapter.asHandle(((HoverText) hoverEvent.getContent()).getComponents())[0]));
+                style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    adapter.asHandle(((HoverText) hoverEvent.getContent()).getComponents())[0]));
                 break;
             }
         }
         if (formats[0]) {
-            component.decoration(TextDecoration.OBFUSCATED);
+            style = style.setObfuscated(true);
         }
         if (formats[1]) {
-            component.decoration(TextDecoration.BOLD);
+            style = style.withBold(true);
         }
         if (formats[2]) {
-            component.decoration(TextDecoration.STRIKETHROUGH);
+            style = style.setStrikethrough(true);
         }
         if (formats[3]) {
-            component.decoration(TextDecoration.UNDERLINED);
+            style = style.setUnderlined(true);
         }
         if (formats[4]) {
-            component.decoration(TextDecoration.ITALIC);
+            style = style.withItalic(true);
         }
+        component.setStyle(style);
         return component;
     }
 

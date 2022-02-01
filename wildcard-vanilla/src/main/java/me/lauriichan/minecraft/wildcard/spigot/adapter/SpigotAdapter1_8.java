@@ -14,7 +14,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public final class SpigotAdapter1_8 extends SpigotAdapter {
 
     private final Map<Color, ChatColor> colorMap = fillColors();
-    private final Color[] colors = colorMap.keySet().toArray(Color[]::new);
+    private final Color[] colors = colorMap.keySet().toArray(new Color[colorMap.size()]);
 
     @Override
     public String getServerName() {

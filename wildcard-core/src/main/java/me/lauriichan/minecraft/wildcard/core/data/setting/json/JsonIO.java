@@ -151,8 +151,7 @@ public final class JsonIO {
         }
         return output;
     }
-
-    @SuppressWarnings("deprecation")
+    
     private static Object getValue(final Object instance, final Field field) {
         try {
             if (field.isAccessible()) {
@@ -191,7 +190,7 @@ public final class JsonIO {
             final int modifier = field.getModifiers();
             if (Modifier.isFinal(field.getModifiers())) {
                 AbstractReflect.FIELD.setFieldValue(field, "modify", modifier & ~Modifier.FINAL);
-                if (field.canAccess(instance)) {
+                if (field.isAccessible()) {
                     field.set(instance, value);
                     AbstractReflect.FIELD.setFieldValue(field, "modify", modifier);
                     return;
@@ -202,7 +201,7 @@ public final class JsonIO {
                 AbstractReflect.FIELD.setFieldValue(field, "modify", modifier);
                 return;
             }
-            if (field.canAccess(instance)) {
+            if (field.isAccessible()) {
                 field.set(instance, value);
                 return;
             }

@@ -20,7 +20,9 @@ import me.lauriichan.minecraft.wildcard.core.util.ReflectHelper;
 
 public final class CommandRegisterEvent extends Event {
 
-    static final Predicate<String> COMMAND_NAME = Pattern.compile("[/\\da-z_]+").asMatchPredicate();
+    private static final Pattern COMMAND_NAME_PATTERN = Pattern.compile("[/\\da-z_]+");
+    
+    static final Predicate<String> COMMAND_NAME = (string) -> COMMAND_NAME_PATTERN.matcher(string).matches();
 
     private final HashSet<Class<? extends ICommand>> commands = new HashSet<>();
 
@@ -50,7 +52,7 @@ public final class CommandRegisterEvent extends Event {
                 continue;
             }
             final Optional<Command> infoOption = ReflectHelper.getAnnotationOfMethod(Command.class, clazz, "build", String.class);
-            if (infoOption.isEmpty()) {
+            if (!infoOption.isPresent()) {
                 logger.log(LogTypeId.WARNING, "Can't find Command annotation for '" + clazz.getSimpleName() + "'!");
                 continue;
             }
@@ -72,7 +74,7 @@ public final class CommandRegisterEvent extends Event {
                 }
                 aliases.add(alias);
             }
-            manager.register(node, aliases.toArray(String[]::new));
+            manager.register(node, aliases.toArray(new String[aliases.size()]));
             aliases.clear();
             registered++;
         }

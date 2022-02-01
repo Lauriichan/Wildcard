@@ -182,11 +182,11 @@ public final class WildcardCore {
             return;
         }
         final Optional<Command> option = ReflectHelper.getAnnotationOfMethod(Command.class, command.getClass(), "build", String.class);
-        if (option.isEmpty()) {
+        if (!option.isPresent()) {
             return;
         }
         final Command info = option.get();
-        if (info.name() == null || info.name().isBlank()) {
+        if (info.name() == null || info.name().trim().isEmpty()) {
             return;
         }
         plugin.register(plugin.build(command.build(info.name()), info.aliases()));

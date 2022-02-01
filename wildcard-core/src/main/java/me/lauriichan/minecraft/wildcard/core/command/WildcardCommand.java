@@ -158,7 +158,7 @@ public final class WildcardCommand implements IBasicCommand {
                 return;
             }
             final String targetRaw = reader.read();
-            if (targetRaw.isBlank() || targetRaw.length() < 3) {
+            if (targetRaw.trim().isEmpty() || targetRaw.length() < 3) {
                 info.send("command.target.invalid", "input", targetRaw);
                 return;
             }
@@ -237,7 +237,7 @@ public final class WildcardCommand implements IBasicCommand {
             return;
         }
         final String targetRaw = reader.read();
-        if (targetRaw.isBlank() || targetRaw.length() < 3) {
+        if (targetRaw.trim().isEmpty() || targetRaw.length() < 3) {
             info.send("command.target.invalid", "input", targetRaw);
             return;
         }
@@ -273,7 +273,7 @@ public final class WildcardCommand implements IBasicCommand {
             return;
         }
         final String targetRaw = reader.read();
-        if (targetRaw.isBlank() || targetRaw.length() < 3) {
+        if (targetRaw.trim().isEmpty() || targetRaw.length() < 3) {
             info.send("command.target.invalid", "input", targetRaw);
             return;
         }
@@ -309,7 +309,7 @@ public final class WildcardCommand implements IBasicCommand {
                 return;
             }
             final String targetRaw = reader.read();
-            if (targetRaw.isBlank() || targetRaw.length() < 3) {
+            if (targetRaw.trim().isEmpty() || targetRaw.length() < 3) {
                 info.send("command.target.invalid", "input", targetRaw);
                 return;
             }
@@ -363,7 +363,7 @@ public final class WildcardCommand implements IBasicCommand {
                 return null;
             }
             final String targetRaw = reader.read();
-            if (targetRaw.isBlank() || targetRaw.length() < 3) {
+            if (targetRaw.trim().isEmpty() || targetRaw.length() < 3) {
                 info.send("command.target.invalid", "input", targetRaw);
                 return null;
             }

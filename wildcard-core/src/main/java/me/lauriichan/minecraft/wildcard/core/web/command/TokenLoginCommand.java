@@ -167,7 +167,7 @@ public class TokenLoginCommand implements ICommand {
             break;
         }
         final String nameOut = source.getCore().getPlugin().getService().getName(target);
-        source.getSender().getSession().getData().set("login.success", (nameOut == null || nameOut.isBlank()) ? username : nameOut,
+        source.getSender().getSession().getData().set("login.success", (nameOut == null || nameOut.trim().isEmpty()) ? username : nameOut,
             IDataType.STRING);
         try {
             new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.SEE_OTHER).header("Location", source.getHost() + "success")

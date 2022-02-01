@@ -218,7 +218,7 @@ public class StringReader implements Iterator<Character> {
     public boolean parseBoolean() {
         final int start = cursor;
         final String content = read();
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             throw new IllegalArgumentException("Boolean can't be parsed -> String is empty");
         }
         if ("true".equalsIgnoreCase(content) || "on".equalsIgnoreCase(content)) {
@@ -255,7 +255,7 @@ public class StringReader implements Iterator<Character> {
         final int start = cursor;
         final boolean hex = peek() == HEX_INDICATOR;
         final String content = readNumberString(hex);
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             return 0;
         }
         try {
@@ -273,7 +273,7 @@ public class StringReader implements Iterator<Character> {
         final int start = cursor;
         final boolean hex = peek() == HEX_INDICATOR;
         final String content = readNumberString(hex);
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             return 0;
         }
         try {
@@ -291,7 +291,7 @@ public class StringReader implements Iterator<Character> {
         final int start = cursor;
         final boolean hex = peek() == HEX_INDICATOR;
         final String content = readNumberString(hex);
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             return 0;
         }
         try {
@@ -309,7 +309,7 @@ public class StringReader implements Iterator<Character> {
         final int start = cursor;
         final boolean hex = peek() == HEX_INDICATOR;
         final String content = readNumberString(hex);
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             return 0;
         }
         try {
@@ -326,7 +326,7 @@ public class StringReader implements Iterator<Character> {
         }
         final int start = cursor;
         final String content = readDecimalString();
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             return 0f;
         }
         try {
@@ -343,7 +343,7 @@ public class StringReader implements Iterator<Character> {
         }
         final int start = cursor;
         final String content = readDecimalString();
-        if (content.isBlank()) {
+        if (content.trim().isEmpty()) {
             return 0d;
         }
         try {

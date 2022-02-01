@@ -59,7 +59,7 @@ public class PageInjectPlaceholderEvent extends Event implements TemplateStore, 
 
     @Override
     public Template[] templateArray() {
-        return templates.values().toArray(Template[]::new);
+        return templates.values().toArray(new Template[templates.size()]);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class PageInjectPlaceholderEvent extends Event implements TemplateStore, 
 
     @Override
     public Placeholder[] placeholderArray() {
-        return placeholders.values().toArray(Placeholder[]::new);
+        return placeholders.values().toArray(new Placeholder[placeholders.size()]);
     }
 
     @Override

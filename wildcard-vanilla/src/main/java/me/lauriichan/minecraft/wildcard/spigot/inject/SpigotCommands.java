@@ -81,7 +81,7 @@ public class SpigotCommands extends Injector<SpigotCommand> {
         if (registry.isEmpty()) {
             return;
         }
-        final SpigotCommand[] array = registry.values().toArray(SpigotCommand[]::new);
+        final SpigotCommand[] array = registry.values().toArray(new SpigotCommand[registry.size()]);
         for (final SpigotCommand transfer : array) {
             uninject0(provider, transfer);
         }

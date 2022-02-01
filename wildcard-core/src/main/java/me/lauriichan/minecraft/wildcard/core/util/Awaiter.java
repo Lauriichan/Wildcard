@@ -1,6 +1,6 @@
 package me.lauriichan.minecraft.wildcard.core.util;
 
-import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
@@ -18,9 +18,9 @@ public final class Awaiter<T> {
 
     public static Awaiter<?> of(final Object waited) {
         final Class<?> clazz = waited.getClass();
-        final Iterator<Class<?>> keys = FUNCTIONS.keys().asIterator();
-        while (keys.hasNext()) {
-            final Class<?> target = keys.next();
+        final Enumeration<Class<?>> keys = FUNCTIONS.keys();
+        while (keys.hasMoreElements()) {
+            final Class<?> target = keys.nextElement();
             if (!target.isAssignableFrom(clazz)) {
                 continue;
             }

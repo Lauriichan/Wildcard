@@ -1,5 +1,6 @@
 package me.lauriichan.minecraft.wildcard.bungee;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
@@ -99,6 +100,11 @@ public final class WildcardBungee extends Plugin implements IWildcardPlugin {
     @Override
     public IWildcardAdapter getAdapter() {
         return adapter;
+    }
+    
+    @Override
+    public File getJarFile() {
+        return getFile();
     }
 
 }

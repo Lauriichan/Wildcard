@@ -43,7 +43,7 @@ public class SpongeCommands extends Injector<SpongeCommand> {
         if (registry.isEmpty()) {
             return;
         }
-        final SpongeCommand[] array = registry.values().toArray(SpongeCommand[]::new);
+        final SpongeCommand[] array = registry.values().toArray(new SpongeCommand[registry.size()]);
         for (final SpongeCommand transfer : array) {
             uninject0(provider, transfer);
         }

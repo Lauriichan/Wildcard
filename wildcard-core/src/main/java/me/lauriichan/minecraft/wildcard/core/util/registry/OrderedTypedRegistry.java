@@ -10,7 +10,7 @@ public class OrderedTypedRegistry<T extends ITyped<?>> extends OrderedRegistry<C
         if (clazz.isArray()) {
             clazz = clazz.getComponentType();
         }
-        final Class<?>[] array = map.keySet().toArray(Class<?>[]::new);
+        final Class<?>[] array = map.keySet().toArray(new Class<?>[map.size()]);
         for (final Class<?> key : array) {
             if (!key.equals(clazz)) {
                 continue;

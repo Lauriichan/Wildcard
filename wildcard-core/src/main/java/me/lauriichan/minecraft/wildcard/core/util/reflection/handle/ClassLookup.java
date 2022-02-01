@@ -3,7 +3,7 @@ package me.lauriichan.minecraft.wildcard.core.util.reflection.handle;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,7 +40,7 @@ public class ClassLookup {
 
     protected ClassLookup(final Class<?> owner) throws IllegalAccessException {
         this.owner = owner;
-        this.privateLookup = owner != null ? MethodHandles.privateLookupIn(owner, LOOKUP) : null;
+        this.privateLookup = owner != null ? LOOKUP.in(owner) : null;
     }
 
     /*
@@ -337,8 +337,8 @@ public class ClassLookup {
      * 
      */
 
-    public ClassLookup searchField(final Predicate<ClassLookup> predicate, final String name, final String fieldName, final Class<?> type) {
-        return predicate.test(this) ? searchField(name, fieldName, type) : this;
+    public ClassLookup searchField(final Predicate<ClassLookup> predicate, final String name, final String fieldName) {
+        return predicate.test(this) ? searchField(name, fieldName) : this;
     }
 
     public ClassLookup searchField(final String name, final String fieldName) {
@@ -358,27 +358,6 @@ public class ClassLookup {
         }
         if (field != null) {
             storeField(name, field);
-        }
-        return this;
-    }
-
-    public ClassLookup searchField(final String name, final String fieldName, final Class<?> type) {
-        if (hasField(name)) {
-            return this;
-        }
-        VarHandle handle = null;
-        try {
-            handle = privateLookup.findVarHandle(owner, fieldName, type);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-        }
-        if (handle == null) {
-            try {
-                handle = privateLookup.findStaticVarHandle(owner, fieldName, type);
-            } catch (SecurityException | NoSuchFieldException | IllegalAccessException e) {
-            }
-        }
-        if (handle != null) {
-            fields.put(name, new SafeFieldHandle(handle));
         }
         return this;
     }
@@ -410,9 +389,10 @@ public class ClassLookup {
     private void storeField(final String name, final Field field, final boolean forceSafe) {
         if (forceSafe || !Modifier.isFinal(field.getModifiers())) {
             try {
-                fields.put(name, new SafeFieldHandle(unreflect(field)));
+                field.setAccessible(true);
+                fields.put(name, new SafeFieldHandle(field));
                 return;
-            } catch (IllegalAccessException | SecurityException e) {
+            } catch (SecurityException e) {
                 if (forceSafe) {
                     return;
                 }
@@ -425,29 +405,9 @@ public class ClassLookup {
         fields.put(name, new UnsafeStaticFieldHandle(field));
     }
 
-    private VarHandle unreflect(final Field field) throws IllegalAccessException, SecurityException {
-        if (Modifier.isStatic(field.getModifiers())) {
-            final boolean access = field.canAccess(null);
-            if (!access) {
-                field.setAccessible(true);
-            }
-            final VarHandle out = LOOKUP.unreflectVarHandle(field);
-            if (!access) {
-                field.setAccessible(false);
-            }
-            return out;
-        }
-        if (field.trySetAccessible()) {
-            final VarHandle out = LOOKUP.unreflectVarHandle(field);
-            field.setAccessible(false);
-            return out;
-        }
-        return LOOKUP.unreflectVarHandle(field);
-    }
-
     private MethodHandle unreflect(final Method method) throws IllegalAccessException, SecurityException {
         if (Modifier.isStatic(method.getModifiers())) {
-            final boolean access = method.canAccess(null);
+            final boolean access = method.isAccessible();
             if (!access) {
                 method.setAccessible(true);
             }
@@ -457,7 +417,7 @@ public class ClassLookup {
             }
             return out;
         }
-        if (method.trySetAccessible()) {
+        if (tryAccessible(method)) {
             final MethodHandle out = LOOKUP.unreflect(method);
             method.setAccessible(false);
             return out;
@@ -465,8 +425,17 @@ public class ClassLookup {
         return LOOKUP.unreflect(method);
     }
 
+    private boolean tryAccessible(AccessibleObject obj) {
+        try {
+            obj.setAccessible(true);
+            return true;
+        } catch (Exception exp) {
+            return false;
+        }
+    }
+
     private MethodHandle unreflect(final Constructor<?> constructor) throws IllegalAccessException {
-        final boolean access = constructor.canAccess(null);
+        final boolean access = constructor.isAccessible();
         if (!access) {
             constructor.setAccessible(true);
         }

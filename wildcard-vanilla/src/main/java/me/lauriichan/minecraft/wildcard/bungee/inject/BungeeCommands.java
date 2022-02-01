@@ -48,7 +48,7 @@ public class BungeeCommands extends Injector<BungeeCommand> {
         if (registry.isEmpty()) {
             return;
         }
-        final BungeeCommand[] array = registry.values().toArray(BungeeCommand[]::new);
+        final BungeeCommand[] array = registry.values().toArray(new BungeeCommand[registry.size()]);
         for (final BungeeCommand transfer : array) {
             uninject0(provider, transfer);
         }

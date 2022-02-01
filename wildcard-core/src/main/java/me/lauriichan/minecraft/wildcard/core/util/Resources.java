@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,18 +28,28 @@ public final class Resources {
 
     private final File folder;
     private final ILogger logger;
-    private final Class<?> resourceClass;
+    private final URI jarUri;
+    private final boolean jarFile;
 
     public Resources(final WildcardCore core) {
         this.logger = core.getLogger();
         this.folder = core.getPlugin().getDataFolder();
-        this.resourceClass = core.getPlugin().getClass();
+        this.jarFile = core.getPlugin().getJarFile().getName().endsWith(".jar");
+        this.jarUri = buildUri(core);
+    }
+    
+    private URI buildUri(WildcardCore core) {
+        try {
+            return new URI("jar:file:/" + core.getPlugin().getJarFile().getAbsolutePath().replace('\\', '/').replace(" ", "%20") + "!/");
+        } catch (URISyntaxException e) {
+            System.err.println(Exceptions.stackTraceToString(e));
+            return core.getPlugin().getJarFile().toURI();
+        }
     }
 
     public Path getExternalPathForImpl(final String path) {
         try {
-            final URI uri = resourceClass.getResource("/" + path).toURI();
-            final Path root = "jar".equals(uri.getScheme()) ? getPathFor(uri, "/" + path) : Paths.get(uri);
+            final Path root = jarFile ? getPathFor(jarUri, "/" + path) : Paths.get(jarUri).resolve(path);
             final File target = new File(folder, path);
             if (PathUtils.isDirectory(root)) {
                 return createDirectoryPath(root, target);

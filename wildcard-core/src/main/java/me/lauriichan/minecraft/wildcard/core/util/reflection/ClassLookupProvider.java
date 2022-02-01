@@ -33,7 +33,7 @@ public class ClassLookupProvider {
     public ClassLookupProvider(final ClassLookupCache cache) {
         this.cache = cache;
         this.provider = Singleton.get(VersionProvider.class);
-        final String serverString = provider.getServerVersion().toServerString();
+        final String serverString = provider == null ? "" : provider.getServerVersion().toServerString();
         this.cbPath = String.format(CB_PATH_FORMAT, serverString, "%s");
         this.nmsPath = String.format(NMS_PATH_FORMAT, serverString, "%s");
     }
@@ -49,7 +49,7 @@ public class ClassLookupProvider {
     public void deleteByPackage(final String path) {
         final Entry<String, ClassLookup>[] array = cache.entries();
         for (final Entry<String, ClassLookup> entry : array) {
-            if (!entry.getValue().getOwner().getPackageName().equals(path)) {
+            if (!entry.getValue().getOwner().getPackage().getName().equals(path)) {
                 continue;
             }
             cache.delete(entry.getKey());

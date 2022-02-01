@@ -79,7 +79,7 @@ public class CommandManager<S> {
             }
             conflicts.add(alias);
         }
-        return conflicts.isEmpty() ? CommandState.SUCCESS : CommandState.PARTIAL.setAliases(conflicts.toArray(String[]::new));
+        return conflicts.isEmpty() ? CommandState.SUCCESS : CommandState.PARTIAL.setAliases(conflicts.toArray(new String[conflicts.size()]));
     }
 
     public boolean unregisterCommand(final String name) {

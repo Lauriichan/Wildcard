@@ -39,8 +39,11 @@ public final class ReflectHelper {
     }
 
     public static <A extends Annotation> Optional<A> getAnnotation(final AnnotatedElement element, final Class<A> annotation) {
-        return Optional.ofNullable(element.getAnnotation(annotation))
-            .or(() -> Optional.ofNullable(element.getDeclaredAnnotation(annotation)));
+        Optional<A> option = Optional.ofNullable(element.getAnnotation(annotation));
+        if(option.isPresent()) {
+            return option;
+        }
+        return Optional.ofNullable(element.getDeclaredAnnotation(annotation));
     }
 
     public static <A extends Annotation> Optional<A> getAnnotationOfField(final Class<A> annotation, final Class<?> clazz,

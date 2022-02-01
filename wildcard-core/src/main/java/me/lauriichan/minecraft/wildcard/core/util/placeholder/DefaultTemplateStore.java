@@ -25,7 +25,7 @@ public class DefaultTemplateStore implements TemplateStore {
 
     @Override
     public Template[] templateArray() {
-        return templates.toArray(Template[]::new);
+        return templates.toArray(new Template[templates.size()]);
     }
 
 }

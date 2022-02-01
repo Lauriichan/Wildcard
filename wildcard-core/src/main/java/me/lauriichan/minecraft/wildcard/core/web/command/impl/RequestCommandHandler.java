@@ -35,7 +35,7 @@ public final class RequestCommandHandler {
         final String string) throws Exception {
         final HashMap<String, String> parsed = parse(string);
         String command = readCommand(parsed, request.getPathAsString(), request.getPath());
-        if (command.isBlank()) {
+        if (command.trim().isEmpty()) {
             final RootNode<?> node = commandManager.getGlobal();
             if (node == null) {
                 new JsonAnswer(StandardContentType.JSON).respond("message", "Command isn't set!").code(ResponseCode.NOT_ACCEPTABLE)
@@ -79,11 +79,11 @@ public final class RequestCommandHandler {
     private String readCommand(final HashMap<String, String> parsed, final String pathString, final String[] path) {
         if (parsed.containsKey("_command")) {
             final String command = parsed.get("_command");
-            if (!command.isBlank()) {
+            if (!command.trim().isEmpty()) {
                 return command;
             }
         }
-        return (pathString.endsWith("/") ? "" : "/") + (pathString.isBlank() ? "index" : path[path.length - 1]);
+        return (pathString.endsWith("/") ? "" : "/") + (pathString.trim().isEmpty() ? "index" : path[path.length - 1]);
     }
 
     private String asString(final HashMap<String, String> input) {

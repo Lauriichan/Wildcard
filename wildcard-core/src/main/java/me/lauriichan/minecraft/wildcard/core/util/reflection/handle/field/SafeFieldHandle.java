@@ -1,39 +1,53 @@
 package me.lauriichan.minecraft.wildcard.core.util.reflection.handle.field;
 
-import java.lang.invoke.VarHandle;
+import java.lang.reflect.Field;
 
-public class SafeFieldHandle implements IFieldHandle<VarHandle> {
+public class SafeFieldHandle implements IFieldHandle<Field> {
 
-    private final VarHandle handle;
+    private final Field handle;
 
-    public SafeFieldHandle(final VarHandle handle) {
+    public SafeFieldHandle(final Field handle) {
         this.handle = handle;
     }
 
     @Override
     public Object getValue() {
-        return handle.get();
+        try {
+            return handle.get(null);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            return null;
+        }
     }
 
     @Override
     public Object getValue(final Object source) {
-        return handle.get(source);
+        try {
+            return handle.get(source);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            return null;
+        }
     }
 
     @Override
-    public IFieldHandle<VarHandle> setValue(final Object value) {
-        handle.set(value);
+    public IFieldHandle<Field> setValue(final Object value) {
+        try {
+            handle.set(null, value);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+        }
         return this;
     }
 
     @Override
-    public IFieldHandle<VarHandle> setValue(final Object source, final Object value) {
-        handle.set(source, value);
+    public IFieldHandle<Field> setValue(final Object source, final Object value) {
+        try {
+            handle.set(source, value);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+        }
         return this;
     }
 
     @Override
-    public VarHandle getHandle() {
+    public Field getHandle() {
         return handle;
     }
 

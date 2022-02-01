@@ -86,7 +86,7 @@ public enum Format {
                 formats.add(format);
             }
         }
-        FORMAT_VALUES = formats.toArray(Format[]::new);
+        FORMAT_VALUES = formats.toArray(new Format[formats.size()]);
     }
 
 }

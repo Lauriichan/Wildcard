@@ -77,10 +77,6 @@
                             <shadedPattern>${project.groupId}.shaded.mysql</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>org.sqlite</pattern>
-                            <shadedPattern>${project.groupId}.shaded.sqlite</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>com.syntaxphoenix.syntaxapi</pattern>
                             <shadedPattern>${project.groupId}.shaded.syntaxapi</shadedPattern>
                         </relocation>

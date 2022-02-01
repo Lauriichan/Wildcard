@@ -19,7 +19,7 @@ version = '2.0.0'
 group = 'me.lauriichan.minecraft.wildcard'
 archivesBaseName = 'wildcard-forge'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(11)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
@@ -33,6 +33,10 @@ minecraft {
     mappings channel: 'official', version: '1.16.5'
 }
 
+compileJava {
+    options.release = 8
+}
+
 configurations {
     shade
     implementation.extendsFrom shade
@@ -42,6 +46,12 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
     
     shade 'me.lauriichan.minecraft.wildcard:wildcard-core:2.0.0'
+    shade 'mysql:mysql-connector-java:6.0.6'
+    shade 'org.xerial:sqlite-jdbc:3.32.3.3'
+    shade 'commons-codec:commons-codec:1.15'
+    shade 'commons-io:commons-io:2.11.0'
+    shade 'org.slf4j:slf4j-api:1.7.30'
+    shade 'com.zaxxer:HikariCP:4.0.3'
 }
 
 processResources {
@@ -63,9 +73,16 @@ shadowJar {
     configurations = [project.configurations.shade]
 
     relocate 'com.syntaxphoenix.syntaxapi', 'me.lauriichan.minecraft.wildcard.shaded.syntaxapi'
+    relocate 'org.apache.commons.io', 'me.lauriichan.minecraft.wildcard.shaded.commons.io'
+    relocate 'org.apache.commons.codec', 'me.lauriichan.minecraft.wildcard.shaded.commons.codec'
+    relocate 'org.slf4j', 'me.lauriichan.minecraft.wildcard.shaded.slf4j'
+    relocate 'com.zaxxer.hikari', 'me.lauriichan.minecraft.wildcard.shaded.hikari'
+    relocate 'com.mysql', 'me.lauriichan.minecraft.wildcard.shaded.mysql'
 
     exclude 'module-info.class'
     exclude 'META-INF/maven/**'
+    
+    archiveFileName="${baseName}-${version}.${extension}"
 }
 
 jar.finalizedBy('shadowJar')

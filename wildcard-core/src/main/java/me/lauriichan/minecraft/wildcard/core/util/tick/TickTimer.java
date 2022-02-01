@@ -121,7 +121,7 @@ public final class TickTimer {
             }
             delta = System.nanoTime() - time;
             updateTps();
-            final ITickReceiver[] receivers = this.receivers.toArray(ITickReceiver[]::new);
+            final ITickReceiver[] receivers = this.receivers.toArray(new ITickReceiver[this.receivers.size()]);
             for (final ITickReceiver receiver : receivers) {
                 receiver.onTick(delta);
             }

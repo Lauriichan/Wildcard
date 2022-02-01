@@ -176,7 +176,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
 
     @Override
     public CompletableFuture<Boolean> hasToken(final UUID uniqueId) {
-        return getToken(uniqueId).thenComposeAsync(token -> CompletableFuture.completedStage(token != null), executor);
+        return getToken(uniqueId).thenComposeAsync(token -> CompletableFuture.completedFuture(token != null), executor);
     }
 
     @Override
@@ -232,7 +232,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     @Override
     public CompletableFuture<Token> getTokenOrGenerate(final UUID uniqueId, final int uses, final OffsetDateTime expires) {
         return getToken(uniqueId)
-            .thenComposeAsync(token -> token != null ? CompletableFuture.completedStage(token) : CompletableFuture.supplyAsync(() -> {
+            .thenComposeAsync(token -> token != null ? CompletableFuture.completedFuture(token) : CompletableFuture.supplyAsync(() -> {
                 byte[] tokenRaw = DigestUtils.sha1(tokenGen.makeKey(12));
                 try (Connection connection = pool.getConnection()) {
                     PreparedStatement statement = connection.prepareStatement(selectTokenByToken);
@@ -281,7 +281,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     public CompletableFuture<RequestResult> deny(final UUID uniqueId) {
         return isAllowed(uniqueId).thenComposeAsync(state -> {
             if (!state) {
-                return CompletableFuture.completedStage(RequestResult.KNOWN);
+                return CompletableFuture.completedFuture(RequestResult.KNOWN);
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryDeny);
@@ -289,11 +289,11 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 statement.setObject(2, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, false);
-                return CompletableFuture.completedStage(RequestResult.SUCCESS);
+                return CompletableFuture.completedFuture(RequestResult.SUCCESS);
             } catch (final SQLException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to insert history (deny) of '" + uniqueId.toString() + "' to MySQL");
             }
-            return CompletableFuture.completedStage(RequestResult.FAILED);
+            return CompletableFuture.completedFuture(RequestResult.FAILED);
         }, executor);
     }
 
@@ -301,7 +301,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     public CompletableFuture<RequestResult> allow(final UUID uniqueId, final UUID targetId) {
         return isAllowed(uniqueId).thenComposeAsync(state -> {
             if (state) {
-                return CompletableFuture.completedStage(RequestResult.KNOWN);
+                return CompletableFuture.completedFuture(RequestResult.KNOWN);
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryAllow);
@@ -310,11 +310,11 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 statement.setObject(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
-                return CompletableFuture.completedStage(RequestResult.SUCCESS);
+                return CompletableFuture.completedFuture(RequestResult.SUCCESS);
             } catch (final SQLException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to insert history (allow) of '" + uniqueId.toString() + "' to SQLite");
             }
-            return CompletableFuture.completedStage(RequestResult.FAILED);
+            return CompletableFuture.completedFuture(RequestResult.FAILED);
         }, executor);
     }
 
@@ -322,14 +322,14 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
     public CompletableFuture<RequestResult> allow(final UUID uniqueId, final String tokenHash) {
         return isAllowed(uniqueId).thenComposeAsync(state -> {
             if (state) {
-                return CompletableFuture.completedStage(RequestResult.KNOWN);
+                return CompletableFuture.completedFuture(RequestResult.KNOWN);
             }
             try (Connection connection = pool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(selectTokenByToken);
                 statement.setBytes(1, Hex.decodeHex(tokenHash));
                 final ResultSet set = statement.executeQuery();
                 if (!set.next()) {
-                    return CompletableFuture.completedStage(RequestResult.FAILED);
+                    return CompletableFuture.completedFuture(RequestResult.FAILED);
                 }
                 final UUID targetId = UUIDHelper.toUniqueId(set.getBytes("Owner"));
                 final Token token = tokenCache.has(uniqueId) ? tokenCache.get(uniqueId)
@@ -345,11 +345,11 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 statement.setObject(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
-                return CompletableFuture.completedStage(RequestResult.SUCCESS);
+                return CompletableFuture.completedFuture(RequestResult.SUCCESS);
             } catch (SQLException | DecoderException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to insert history (allow) of '" + uniqueId.toString() + "' to MySQL");
             }
-            return CompletableFuture.completedStage(RequestResult.FAILED);
+            return CompletableFuture.completedFuture(RequestResult.FAILED);
         }, executor);
     }
 
@@ -372,11 +372,11 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             } catch (final SQLException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to retrieve history of '" + uniqueId.toString() + "' from MySQL");
             }
-            final HistoryEntry[] entries = list.toArray(HistoryEntry[]::new);
+            final HistoryEntry[] entries = list.toArray(new HistoryEntry[list.size()]);
             if (entries.length != 0) {
                 historyCache.put(uniqueId, entries);
             }
-            return list.toArray(HistoryEntry[]::new);
+            return list.toArray(new HistoryEntry[list.size()]);
         }, executor);
     }
 

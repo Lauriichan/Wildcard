@@ -19,7 +19,7 @@ public final class SessionManager {
         final String session = Optional.ofNullable(request.getCookie("WCSession")).map(object -> (String) object)
             .orElseGet(this::generateSession);
         final Optional<ClientSession> option = getOptionalSession(session);
-        if (option.isPresent() && option.filter(ClientSession::hasExpired).isEmpty()) {
+        if (option.isPresent() && !option.filter(ClientSession::hasExpired).isPresent()) {
             sessions.remove(option.get());
             return createSession(generateSession());
         }

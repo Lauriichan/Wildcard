@@ -44,7 +44,7 @@ public abstract class BaseCommand<S extends BaseInfo> implements IUnique {
     }
 
     protected List<String> matchComplete(final List<String> complete, final String argument) {
-        if (!argument.isBlank()) {
+        if (!argument.trim().isEmpty()) {
             return complete;
         }
         int size = complete.size();

@@ -25,7 +25,7 @@ public class DefaultPlaceholderStore implements PlaceholderStore {
 
     @Override
     public Placeholder[] placeholderArray() {
-        return placeholders.toArray(Placeholder[]::new);
+        return placeholders.toArray(new Placeholder[placeholders.size()]);
     }
 
 }

@@ -50,7 +50,7 @@ public abstract class ServiceAdapter implements ITickReceiver {
             return nameCache.get(uniqueId);
         }
         final String name = MojangProfileService.getName(uniqueId);
-        if (name == null || name.isBlank()) {
+        if (name == null || name.trim().isEmpty()) {
             return null;
         }
         nameCache.put(uniqueId, name);

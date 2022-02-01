@@ -10,7 +10,7 @@ import me.lauriichan.minecraft.wildcard.core.command.api.nodes.RootNode;
 public interface IWildcardPlugin {
 
     BaseCommand<?> build(RootNode<BaseInfo> node, String[] aliases);
-    
+
     default void register(BaseCommand<?> command) {
         getCore().getInjections().inject(command);
     }
@@ -30,5 +30,7 @@ public interface IWildcardPlugin {
     ServiceAdapter getService();
 
     IWildcardAdapter getAdapter();
+
+    File getJarFile();
 
 }
