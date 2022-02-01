@@ -64,6 +64,9 @@
 * [MySQL Java Connector](https://github.com/mysql/mysql-connector-j)
 
 ### Built for
+* [Sponge Api](https://github.com/SpongePowered/SpongeAPI)
+* [Forge](https://github.com/MinecraftForge/MinecraftForge)
+* [Fabric](https://github.com/FabricMC/fabric-loader)
 * [Bungeecord](https://github.com/SpigotMC/BungeeCord)
 * [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
 
