@@ -76,8 +76,8 @@
 
 ### Installation
 
-You need to have Java 11 installed to use this plugin!
-Download the (jar from Spigot)[] and put it into your plugins folder.
+You need to have Java 8 installed to use this plugin!
+Download the jar from the platform you want it for and put it into your plugins / mods folder.
 You should setup the webserver by changing at least its host.
 I would recommend setting up a reverse proxy to enable SSL use.
 
