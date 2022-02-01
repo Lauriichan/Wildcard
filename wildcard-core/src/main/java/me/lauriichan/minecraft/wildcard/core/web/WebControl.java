@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 import com.syntaxphoenix.syntaxapi.net.http.Cookie;
@@ -25,6 +27,7 @@ import me.lauriichan.minecraft.wildcard.core.data.container.api.IDataType;
 import me.lauriichan.minecraft.wildcard.core.data.container.nbt.NbtContainer;
 import me.lauriichan.minecraft.wildcard.core.settings.RatelimitSettings;
 import me.lauriichan.minecraft.wildcard.core.settings.WebSettings;
+import me.lauriichan.minecraft.wildcard.core.util.NamedThreadFactory;
 import me.lauriichan.minecraft.wildcard.core.util.Resources;
 import me.lauriichan.minecraft.wildcard.core.util.Singleton;
 import me.lauriichan.minecraft.wildcard.core.util.WindowsShortcut;
@@ -41,10 +44,13 @@ public final class WebControl extends WebRedirectHandler {
 
     private final WebSettings settings = Singleton.get(WebSettings.class);
     private final RatelimitSettings ratelimit = Singleton.get(RatelimitSettings.class);
-    
+
     private final WildcardCore core;
 
     private final Container<String> hostPath = Container.of();
+
+    private final NamedThreadFactory threadFactory = new NamedThreadFactory("Wildcard");
+    private final ExecutorService threadService = Executors.newCachedThreadPool(threadFactory);
 
     public WebControl(final WildcardCore core) {
         super(WindowsShortcut.lookUp(new File(Singleton.get(WebSettings.class).getString("directory", "webpage"))));
@@ -57,6 +63,10 @@ public final class WebControl extends WebRedirectHandler {
     /*
      * Getters
      */
+    
+    public ExecutorService getThreadService() {
+        return threadService;
+    }
 
     public RequestCommandHandler getCommandHandler() {
         return commandHandler;
@@ -93,7 +103,7 @@ public final class WebControl extends WebRedirectHandler {
             core.getLogger().log(LogTypeId.WARNING, "WebServer will not startup as long as the host can't be resolved!");
             return;
         }
-        final WebServer instance = new WebServer(port, host, core.getPlugin().getExecutor());
+        final WebServer instance = new SpecializedWebServer(port, host, threadService);
         instance.setHandler(this);
         instance.addTypes(RequestType.GET, RequestType.POST);
         instance.setValidator((writer,
@@ -109,7 +119,7 @@ public final class WebControl extends WebRedirectHandler {
             core.getLogger().log(LogTypeId.WARNING, exp);
         }
     }
-    
+
     private void loadRatelimit() {
         ratelimit.getBoolean("enabled", true);
         ratelimit.getInteger("attempts", 5);
@@ -137,6 +147,10 @@ public final class WebControl extends WebRedirectHandler {
             core.getLogger().log(LogTypeId.WARNING, e);
         }
         server.replace(null);
+    }
+
+    public void shutdown() {
+        threadService.shutdownNow(); // Instant shutdown please
     }
 
     /*

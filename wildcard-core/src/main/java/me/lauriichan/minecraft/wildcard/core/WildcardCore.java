@@ -131,6 +131,7 @@ public final class WildcardCore {
     public void disable() {
         cacheTimer.stop();
         control.ifPresent(WebControl::exit);
+        control.ifPresent(WebControl::shutdown);
         database.ifPresent(Database::close);
         injections.ifPresent(Injections::uninjectAll);
         classProvider.ifPresent(provider -> provider.getReflection().clear());

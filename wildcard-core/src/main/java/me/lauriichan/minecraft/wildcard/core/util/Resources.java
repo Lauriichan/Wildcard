@@ -37,10 +37,11 @@ public final class Resources {
         this.jarFile = core.getPlugin().getJarFile().getName().endsWith(".jar");
         this.jarUri = buildUri(core);
     }
-    
+
     private URI buildUri(WildcardCore core) {
         try {
-            return new URI("jar:file:/" + core.getPlugin().getJarFile().getAbsolutePath().replace('\\', '/').replace(" ", "%20") + "!/");
+            return new URI(("jar:file:/" + core.getPlugin().getJarFile().getAbsolutePath().replace('\\', '/').replace(" ", "%20") + "!/")
+                .replace("//", "/"));
         } catch (URISyntaxException e) {
             System.err.println(Exceptions.stackTraceToString(e));
             return core.getPlugin().getJarFile().toURI();

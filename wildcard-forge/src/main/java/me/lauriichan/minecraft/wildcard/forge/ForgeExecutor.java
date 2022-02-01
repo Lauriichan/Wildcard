@@ -32,7 +32,7 @@ public class ForgeExecutor extends AbstractExecutorService {
         if (exe == null) {
             return;
         }
-        exe.submitAsync(command);
+        exe.execute(command);
     }
 
     @Override
