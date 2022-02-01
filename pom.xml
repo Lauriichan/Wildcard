@@ -1,132 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.playuniverse.minecraft</groupId>
-    <artifactId>wildcard</artifactId>
-    <version>1.1.0</version>
-    <name>Wildcard</name>
+    <groupId>me.lauriichan.minecraft.wildcard</groupId>
+    <artifactId>wildcard-parent</artifactId>
+    <version>2.0.0</version>
+    <packaging>pom</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.author>Lauriichan</project.author>
+        <wildcard.id>wildcard</wildcard.id>
+        <wildcard.name>Wildcard</wildcard.name>
+        <wildcard.author>Lauriichan</wildcard.author>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
+    <modules>
+        <module>wildcard-core</module>
+        <module>wildcard-vanilla</module>
+        <module>wildcard-sponge</module>
+    </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>event</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>random</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>key</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>version</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>exception</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>nbt</artifactId>
-            <version>2.0.11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.syntaxphoenix.syntaxapi</groupId>
-            <artifactId>net</artifactId>
-            <version>2.0.15</version>
-        </dependency>
-
-        <!-- Apache Commons -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
-
-        <!-- Database -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.6</version>
-        </dependency>
-
-        <!-- Connection Pool-->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-
-        <!-- SLF4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
-        </dependency>
-
-        <!-- Spigot -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.18.1-R0.1-SNAPSHOT</version>
-            <type>javadoc</type>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Bungeecord -->
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.17-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.17-R0.1-SNAPSHOT</version>
-            <type>javadoc</type>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -139,111 +30,14 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.slf4j</pattern>
-                            <shadedPattern>${project.groupId}.shaded.slf4j</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>${project.groupId}.shaded.hikari</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.mysql</pattern>
-                            <shadedPattern>${project.groupId}.shaded.mysql</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.apache.commons.io</pattern>
-                            <shadedPattern>${project.groupId}.shaded.commons.io</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.apache.commons.codec</pattern>
-                            <shadedPattern>${project.groupId}.shaded.commons.codec</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.syntaxphoenix.syntaxapi</pattern>
-                            <shadedPattern>${project.groupId}.shaded.syntaxapi</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version> <!--$NO-MVN-MAN-VER$ -->
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${env.TEST_SERVER_DIR}/1.18.1/plugins/${project.artifactId}.jar" />
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
     </build>
 </project>

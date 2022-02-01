@@ -1,8 +1,0 @@
-main: ${project.groupId}.${project.artifactId}.bungee.${project.name}Bungee
-name: ${project.name}
-version: ${project.version}
-api-version: 1.13
-author: ${project.author}
-website: www.playuniverse.org
-libraries:
-    - org.xerial:sqlite-jdbc:3.36.0.3

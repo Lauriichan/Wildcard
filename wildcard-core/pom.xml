@@ -1,0 +1,97 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>me.lauriichan.minecraft.wildcard</groupId>
+        <artifactId>wildcard-parent</artifactId>
+        <version>2.0.0</version>
+    </parent>
+    <artifactId>wildcard-core</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>event</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>random</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>key</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>version</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>exception</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>nbt</artifactId>
+            <version>2.0.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.syntaxphoenix.syntaxapi</groupId>
+            <artifactId>net</artifactId>
+            <version>2.0.15</version>
+        </dependency>
+
+        <!-- Apache Commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Connection Pool-->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- SLF4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

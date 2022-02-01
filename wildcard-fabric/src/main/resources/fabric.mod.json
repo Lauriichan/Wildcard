@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "wildcard",
+  "version": "${version}",
+
+  "name": "Wildcard",
+  "description": "",
+  "authors": [
+    "Lauriichan"
+  ],
+  "contact": {
+    "sources": "https://github.com/Wildcard/Lauriichan"
+  },
+
+  "license": "GPLv3",
+
+  "environment": "SERVER",
+  "entrypoints": {
+    "server": [
+      "me.lauriichan.minecraft.wildcard.fabric.WildcardFabric"
+    ]
+  },
+  "mixins": [
+    "me.lauriichan.minecraft.wildcard.mixin.fabric.MinecraftServerAccessor",
+    "me.lauriichan.minecraft.wildcard.mixin.fabric.PlayerManagerMixin"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {}
+}

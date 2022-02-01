@@ -1,0 +1,6 @@
+main: ${project.groupId}.${wildcard.id}.spigot.${wildcard.name}Spigot
+name: ${project.name}
+version: ${project.version}
+api-version: 1.13
+author: ${project.author}
+website: www.playuniverse.org

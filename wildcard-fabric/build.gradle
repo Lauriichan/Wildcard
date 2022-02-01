@@ -1,0 +1,76 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
+	id 'maven-publish'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+	mavenLocal()
+}
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	
+    shade 'me.lauriichan.minecraft.wildcard:wildcard-core:2.0.0'
+    shade 'mysql:mysql-connector-java:6.0.6'
+    shade 'org.xerial:sqlite-jdbc:3.32.3.3'
+    shade 'commons-codec:commons-codec:1.15'
+    shade 'commons-io:commons-io:2.11.0'
+    shade 'org.slf4j:slf4j-api:1.7.30'
+    shade 'com.zaxxer:HikariCP:4.0.3'
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	def targetVersion = 8
+	if (JavaVersion.current().isJava9Compatible()) {
+		 it.options.release = targetVersion
+	}
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
+}
+
+shadowJar {
+    configurations = [project.configurations.shade]
+
+    relocate 'com.syntaxphoenix.syntaxapi', 'me.lauriichan.minecraft.wildcard.shaded.syntaxapi'
+    relocate 'org.apache.commons.io', 'me.lauriichan.minecraft.wildcard.shaded.commons.io'
+    relocate 'org.apache.commons.codec', 'me.lauriichan.minecraft.wildcard.shaded.commons.codec'
+    relocate 'org.slf4j', 'me.lauriichan.minecraft.wildcard.shaded.slf4j'
+    relocate 'com.zaxxer.hikari', 'me.lauriichan.minecraft.wildcard.shaded.hikari'
+    relocate 'com.mysql', 'me.lauriichan.minecraft.wildcard.shaded.mysql'
+
+    exclude 'module-info.class'
+    exclude 'META-INF/maven/**'
+    
+    archiveFileName="${baseName}-${version}.${extension}"
+}
+
+jar.finalizedBy('remapJar')
+remapJar.finalizedBy('shadowJar')

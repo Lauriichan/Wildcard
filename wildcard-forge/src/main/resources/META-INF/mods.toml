@@ -1,0 +1,23 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/Lauriichan/Wildcard/issues"
+
+[[mods]]
+modId="wildcard"
+version="${file.jarVersion}"
+displayName="Wildcard"
+displayURL="https://github.com/Lauriichan/Wildcard"
+#logoFile=""
+#credits=""
+authors="Lauriichan"
+description='''
+Wildcard is a small Whitelist mod which adds the ability to either whitelist people on normal fashion with a command or to just give away keys which can be used on a fully customizable Web Interface.
+'''
+
+[[dependencies.wildcard]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="SERVER"
