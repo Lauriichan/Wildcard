@@ -60,8 +60,10 @@
 * [HikariCP](https://github.com/brettwooldridge/HikariCP)
 * [SyntaxApi](https://github.com/SyntaxPhoenix/syntaxapi)
 * [Apache Commons IO](https://github.com/apache/commons-io)
+* [Apache Commons Lang](https://github.com/apache/commons-lang)
 * [Apache Commons Codec](https://github.com/apache/commons-codec)
 * [MySQL Java Connector](https://github.com/mysql/mysql-connector-j)
+* [SQLite JDBC](https://github.com/xerial/sqlite-jdbc)
 
 ### Built for
 * [Sponge Api](https://github.com/SpongePowered/SpongeAPI)
