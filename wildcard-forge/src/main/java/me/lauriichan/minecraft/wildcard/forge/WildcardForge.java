@@ -13,6 +13,7 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import java.io.File;
 import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.sqlite.JDBC;
@@ -30,6 +31,7 @@ import me.lauriichan.minecraft.wildcard.core.command.api.nodes.MapNode;
 import me.lauriichan.minecraft.wildcard.core.command.api.nodes.RootNode;
 import me.lauriichan.minecraft.wildcard.core.command.api.redirect.NodeRedirect;
 import me.lauriichan.minecraft.wildcard.core.settings.PluginSettings;
+import me.lauriichan.minecraft.wildcard.core.util.NamedThreadFactory;
 import me.lauriichan.minecraft.wildcard.core.util.Singleton;
 import me.lauriichan.minecraft.wildcard.forge.command.ForgeCommand;
 import me.lauriichan.minecraft.wildcard.forge.inject.ForgeCommands;
@@ -43,8 +45,10 @@ public class WildcardForge implements IWildcardPlugin {
     private final ForgeAdapter adapter;
     private final WildcardCore core;
 
-    private final ForgeExecutor executor;
     private final Container<ForgeService> service = Container.of();
+
+    private final NamedThreadFactory threadFactory = new NamedThreadFactory("Wildcard");
+    private final ExecutorService threadService = Executors.newCachedThreadPool(threadFactory);
 
     private final File dataFolder;
     private final File jarFile;
@@ -59,7 +63,6 @@ public class WildcardForge implements IWildcardPlugin {
         ForgeConfiguration.register(ModLoadingContext.get());
         this.dataFolder = new File(ModLoadingContext.get().getActiveNamespace());
         this.adapter = new ForgeAdapter();
-        this.executor = new ForgeExecutor();
         this.core = new WildcardCore(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -117,7 +120,7 @@ public class WildcardForge implements IWildcardPlugin {
 
     @Override
     public ExecutorService getExecutor() {
-        return executor;
+        return threadService;
     }
 
     @Override
