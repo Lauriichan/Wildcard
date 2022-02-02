@@ -73,7 +73,7 @@
 * [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
 
 ### Get on
-* [CurseForge (for Fabric / Forge) {Comming soon}]()
+* [CurseForge (for Fabric / Forge)](https://www.curseforge.com/minecraft/mc-mods/wildcard)
 * [Ore (for Sponge)](https://ore.spongepowered.org/Lauriichan/Wildcard)
 * [Spigot (for Spigot / BungeeCord)](https://www.spigotmc.org/resources/97996/)
 
