@@ -89,7 +89,7 @@ public class WildcardForge implements IWildcardPlugin {
         setup = true;
         core.preSetup();
         service.replace(new ForgeService(core.getComponentParser(), Singleton.get(PluginSettings.class)));
-        MinecraftForge.EVENT_BUS.register(new PlayerListener(core, core.getDatabase()));
+        new PlayerListener(core, core.getDatabase());
         core.getInjections().register(new ForgeCommands());
         core.registerCommands();
         core.postSetup();
