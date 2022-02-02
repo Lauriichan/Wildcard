@@ -15,9 +15,9 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 
-version = '2.0.0'
-group = 'me.lauriichan.minecraft.wildcard'
-archivesBaseName = 'wildcard-forge'
+version = project.mod_version
+group = project.maven_group
+archivesBaseName = project.archives_base_name
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(11)
 
@@ -45,7 +45,7 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
     
-    shade 'me.lauriichan.minecraft.wildcard:wildcard-core:2.0.0'
+    shade 'me.lauriichan.minecraft.wildcard:wildcard-core:' + project.mod_version
     shade 'mysql:mysql-connector-java:6.0.6'
     shade 'org.xerial:sqlite-jdbc:3.32.3.3'
     shade 'commons-codec:commons-codec:1.15'

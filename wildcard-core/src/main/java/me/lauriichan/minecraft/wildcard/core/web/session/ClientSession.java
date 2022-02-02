@@ -1,7 +1,9 @@
 package me.lauriichan.minecraft.wildcard.core.web.session;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.lauriichan.minecraft.wildcard.core.data.container.nbt.NbtAdapterRegistry;
@@ -9,7 +11,7 @@ import me.lauriichan.minecraft.wildcard.core.data.container.nbt.NbtContainer;
 
 public final class ClientSession {
 
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.RFC_1123_DATE_TIME;
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH).withZone(ZoneId.of("GMT"));
 
     private final SessionManager sessionOwner;
 
