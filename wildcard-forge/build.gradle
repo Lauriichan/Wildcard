@@ -1,10 +1,12 @@
 buildscript {
     repositories {
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
 
@@ -13,9 +15,10 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 
-version = project.mod_version
+version = project.mod_version + '.' + project.mod_patch
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
@@ -52,6 +55,14 @@ dependencies {
     shade 'commons-io:commons-io:2.11.0'
     shade 'org.slf4j:slf4j-api:1.7.30'
     shade 'com.zaxxer:HikariCP:4.0.3'
+    
+    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+}
+
+mixin {
+    add sourceSets.main, "wildcard.mixins.refmap.json"
+
+    config "wildcard.mixins.json"
 }
 
 processResources {

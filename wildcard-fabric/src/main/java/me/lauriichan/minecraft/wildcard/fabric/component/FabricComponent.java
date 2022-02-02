@@ -124,7 +124,7 @@ public final class FabricComponent extends PlatformComponent {
         LiteralText component = new LiteralText(text);
         Style style = Style.EMPTY;
         if (color != null) {
-            style = style.withColor(TextColor.fromRgb(color.getRGB()));
+            style = style.withColor(TextColor.fromRgb(color.getRGB() & 0xFFFFFF));
         }
         if (clickEvent != null) {
             switch (clickEvent.getAction()) {

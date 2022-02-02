@@ -22,7 +22,7 @@ import net.minecraft.text.Text;
 @Mixin(PlayerManager.class)
 abstract class PlayerManagerMixin {
 
-    @Inject(method = "checkCanJoin", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "checkCanJoin(Ljava/net/SocketAddress;Lcom/mojang/authlib/GameProfile;)Lnet/minecraft/text/Text;", at = @At("HEAD"), cancellable = true)
     private void triggerJoinClassback(SocketAddress address, GameProfile profile, CallbackInfoReturnable<Text> info) {
         IPlayerJoinCallback callback = FabricMixin.JOIN_CALLBACK.get();
         if (callback == null) {

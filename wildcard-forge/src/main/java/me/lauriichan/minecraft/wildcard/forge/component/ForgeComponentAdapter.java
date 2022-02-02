@@ -23,6 +23,7 @@ public final class ForgeComponentAdapter implements IPlatformComponentAdapter<IT
         for (int i = 0; i < components.length; i++) {
             component.append(asHandle(components[i]));
         }
+        
         return new ITextComponent[] {
             component
         };

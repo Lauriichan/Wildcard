@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "me.lauriichan.minecraft.wildcard.mixin.fabric",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [],
+    "client": [],
+    "server": [
+        "MinecraftServerAccessor",
+        "PlayerManagerMixin"
+    ],
+    "injectors": {
+      "defaultRequire": 1
+    }
+  }

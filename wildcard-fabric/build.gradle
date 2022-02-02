@@ -8,7 +8,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version
+version = project.mod_version + '.' + project.mod_patch
 group = project.maven_group
 
 repositories {
@@ -25,7 +25,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	
-    shade 'me.lauriichan.minecraft.wildcard:wildcard-core:2.0.0'
+    shade 'me.lauriichan.minecraft.wildcard:wildcard-core:' + project.mod_version
     shade 'mysql:mysql-connector-java:6.0.6'
     shade 'org.xerial:sqlite-jdbc:3.32.3.3'
     shade 'commons-codec:commons-codec:1.15'

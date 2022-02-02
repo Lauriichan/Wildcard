@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "me.lauriichan.minecraft.wildcard.mixin.forge",
+    "compatibilityLevel": "JAVA_8",
+    "refmap": "wildcard.mixins.refmap.json",
+    "mixins": [],
+    "client": [],
+    "server": [
+        "PlayerListMixin"
+    ],
+    "injectors": {
+      "defaultRequire": 1
+    }
+  }

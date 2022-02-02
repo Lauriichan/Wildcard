@@ -20,7 +20,7 @@
       "me.lauriichan.minecraft.wildcard.fabric.WildcardFabric"
     ]
   },
-  "mixins": [
+  "server": [
     "me.lauriichan.minecraft.wildcard.mixin.fabric.MinecraftServerAccessor",
     "me.lauriichan.minecraft.wildcard.mixin.fabric.PlayerManagerMixin"
   ],

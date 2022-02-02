@@ -122,7 +122,7 @@ public final class ForgeComponent extends PlatformComponent {
         StringTextComponent component = new StringTextComponent(text);
         Style style = Style.EMPTY;
         if (color != null) {
-            style = style.withColor(net.minecraft.util.text.Color.fromRgb(color.getRGB()));
+            style = style.withColor(net.minecraft.util.text.Color.fromRgb(color.getRGB() & 0xFFFFFF));
         }
         if (clickEvent != null) {
             switch (clickEvent.getAction()) {
@@ -133,6 +133,7 @@ public final class ForgeComponent extends PlatformComponent {
                 style = style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, clickEvent.getValue()));
                 break;
             }
+            System.out.println("Click");
         }
         if (hoverEvent != null) {
             switch (hoverEvent.getAction()) {
@@ -141,6 +142,7 @@ public final class ForgeComponent extends PlatformComponent {
                     adapter.asHandle(((HoverText) hoverEvent.getContent()).getComponents())[0]));
                 break;
             }
+            System.out.println("Hover");
         }
         if (formats[0]) {
             style = style.setObfuscated(true);
