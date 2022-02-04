@@ -2,8 +2,6 @@ package me.lauriichan.minecraft.wildcard.core.command.api.base;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 
 import me.lauriichan.minecraft.wildcard.core.WildcardCore;
@@ -47,10 +45,10 @@ public abstract class BaseCommand<S extends BaseInfo> implements IUnique {
         if (!argument.trim().isEmpty()) {
             return complete;
         }
+        final String lowerArgument = argument.trim().toLowerCase();
         int size = complete.size();
         for (int index = 0; index < size; index++) {
-            // TODO: Re-think if this is really needed
-            if (StringUtils.containsIgnoreCase(complete.get(index), argument)) {
+            if (!complete.get(index).toLowerCase().contains(lowerArgument)) {
                 continue;
             }
             complete.remove(index--);
@@ -130,7 +128,7 @@ public abstract class BaseCommand<S extends BaseInfo> implements IUnique {
 
     protected String getCommandName(final String arguments) {
         StringReader reader = new StringReader(arguments).skipWhitespace();
-        if(!reader.hasNext()) {
+        if (!reader.hasNext()) {
             return redirect.getGlobal();
         }
         return reader.read();

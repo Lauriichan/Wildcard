@@ -28,8 +28,6 @@ import me.lauriichan.minecraft.wildcard.core.message.PlatformComponent;
 import me.lauriichan.minecraft.wildcard.core.message.PlatformHoverEvent;
 import me.lauriichan.minecraft.wildcard.core.message.hover.HoverText;
 
-// TODO: Figure out how to solve this issue
-
 public final class WildcardCommand implements IBasicCommand {
 
     private final Map<String, Permission> helpMessages;
@@ -87,6 +85,9 @@ public final class WildcardCommand implements IBasicCommand {
         final StringReader reader = context.getReader();
         final Container<UUID> target = Container.of();
         final HistoryEntry[] history = getHistory(target, info, database, reader);
+        if (history == null) {
+            return;
+        }
         int page = 0;
         final int pages = (int) Math.ceil(history.length / 6d);
         if (reader.skipWhitespace().hasNext() && reader.testInt()) {
@@ -100,10 +101,10 @@ public final class WildcardCommand implements IBasicCommand {
             final HistoryEntry entry = history[index];
             final String idxSize = space((index + 1 + "").length());
             if (entry.getTokenId() == null) {
-                info.send("commnad.history.list.item.deny", "idx", index + 1, "idxSize", idxSize, "time", entry.getTimeAsString());
+                info.send("command.history.list.item.deny", "index", index + 1, "idxSize", idxSize, "time", entry.getTimeAsString());
                 continue;
             }
-            info.send("commnad.history.list.item.allow", "idx", index + 1, "idxSize", idxSize, "ownerName",
+            info.send("command.history.list.item.allow", "index", index + 1, "idxSize", idxSize, "ownerName",
                 info.getName(entry.getTokenId()), "ownerId", entry.getTokenId(), "time", entry.getTimeAsString());
         }
         final String targetCmd = target.isEmpty() ? " " : name + ' ';
@@ -250,9 +251,9 @@ public final class WildcardCommand implements IBasicCommand {
             }
         }
         final String name = info.getName(uniqueId);
-        info.send("command.allow.start", "name", name);
+        info.send("command.allow.start", "user", name);
         final RequestResult result = database.allow(uniqueId, info.getSenderId()).join();
-        info.send("command.allow." + result.name().toLowerCase(), "name", name);
+        info.send("command.allow." + result.name().toLowerCase(), "user", name);
     }
 
     private void onDeny(final CommandContext<BaseInfo> context) {
