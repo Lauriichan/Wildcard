@@ -21,6 +21,7 @@ import com.syntaxphoenix.syntaxapi.logging.ILogger;
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 import com.syntaxphoenix.syntaxapi.utils.java.Exceptions;
 import com.syntaxphoenix.syntaxapi.utils.java.Files;
+import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
 
 import me.lauriichan.minecraft.wildcard.core.WildcardCore;
 
@@ -30,6 +31,8 @@ public final class Resources {
     private final ILogger logger;
     private final URI jarUri;
     private final boolean jarFile;
+
+    private final Container<Path> root = Container.of();
 
     public Resources(final WildcardCore core) {
         this.logger = core.getLogger();
@@ -48,10 +51,26 @@ public final class Resources {
         }
     }
 
+    public Path getInternalRootImpl() {
+        if (root.isPresent()) {
+            return root.get();
+        }
+        try {
+            return root.replace(jarFile ? getPathFor(jarUri, "/") : Paths.get(jarUri).resolve("classes")).lock().get();
+        } catch (IOException e) {
+            logger.log(LogTypeId.ERROR, "Failed to retrieve resource root!");
+            logger.log(LogTypeId.ERROR, Exceptions.stackTraceToString(e));
+            return null;
+        }
+    }
+
     public Path getExternalPathForImpl(final String path) {
         try {
-            final Path root = jarFile ? getPathFor(jarUri, "/" + path) : Paths.get(jarUri).resolve(path);
+            final Path root = getInternalRootImpl().resolveSibling(path);
             final File target = new File(folder, path);
+            if (root == null) {
+                return target.toPath();
+            }
             if (PathUtils.isDirectory(root)) {
                 return createDirectoryPath(root, target);
             }
@@ -108,6 +127,10 @@ public final class Resources {
 
     public static Path getExternalPathFor(final String path) {
         return Singleton.get(Resources.class).getExternalPathForImpl(path);
+    }
+
+    public static Path getInternalRoot() {
+        return Singleton.get(Resources.class).getInternalRootImpl();
     }
 
 }

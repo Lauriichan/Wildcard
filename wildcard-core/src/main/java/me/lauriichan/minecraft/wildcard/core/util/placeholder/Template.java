@@ -13,7 +13,7 @@ public class Template implements PlaceholderStore {
         this.original = original;
         this.key = key;
         this.content = content;
-        PlaceholderParser.parse(store, content);
+        PlaceholderParser.parseFunction(store, content);
     }
 
     protected String getOriginal() {

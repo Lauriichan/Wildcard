@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -22,10 +21,13 @@ import com.syntaxphoenix.syntaxapi.utils.java.Files;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.pool.HikariPool;
 
-import me.lauriichan.minecraft.wildcard.core.data.storage.Database;
+import me.lauriichan.minecraft.wildcard.core.data.migration.MigrationManager;
+import me.lauriichan.minecraft.wildcard.core.data.migration.type.SQLMigrationType;
 import me.lauriichan.minecraft.wildcard.core.data.storage.DatabaseInitializationException;
 import me.lauriichan.minecraft.wildcard.core.data.storage.HistoryEntry;
 import me.lauriichan.minecraft.wildcard.core.data.storage.RequestResult;
+import me.lauriichan.minecraft.wildcard.core.data.storage.SQLDatabase;
+import me.lauriichan.minecraft.wildcard.core.data.storage.SQLTable;
 import me.lauriichan.minecraft.wildcard.core.data.storage.Token;
 import me.lauriichan.minecraft.wildcard.core.data.storage.util.TimeHelper;
 import me.lauriichan.minecraft.wildcard.core.data.storage.util.UUIDHelper;
@@ -36,20 +38,18 @@ import me.lauriichan.minecraft.wildcard.core.util.cache.ThreadSafeCache;
 import me.lauriichan.minecraft.wildcard.core.util.tick.ITickReceiver;
 import me.lauriichan.minecraft.wildcard.core.util.tick.TickTimer;
 
-public class SQLiteDatabase extends Database implements ITickReceiver {
+public class SQLiteDatabase extends SQLDatabase implements ITickReceiver {
 
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS %s%s";
+    public static final String SELECT_TOKEN_BY_USER = "SELECT * FROM %s WHERE Owner = ?";
+    public static final String SELECT_TOKEN_BY_TOKEN = "SELECT * FROM %s WHERE Token = ?";
+    public static final String UPDATE_TOKEN = "UPDATE %s SET Uses = ? WHERE Token = ?";
+    public static final String INSERT_TOKEN = "INSERT INTO %s VALUES (?, ?, ?, ?)";
+    public static final String DELETE_TOKEN = "DELETE FROM %s WHERE Owner = ? AND Token = ?";
 
-    private static final String SELECT_TOKEN_BY_USER = "SELECT * FROM %s WHERE Owner = ?";
-    private static final String SELECT_TOKEN_BY_TOKEN = "SELECT * FROM %s WHERE Token = ?";
-    private static final String UPDATE_TOKEN = "UPDATE %s SET Uses = ? WHERE Token = ?";
-    private static final String INSERT_TOKEN = "INSERT INTO %s VALUES (?, ?, ?, ?)";
-    private static final String DELETE_TOKEN = "DELETE FROM %s WHERE Owner = ? AND Token = ?";
-
-    private static final String INSERT_HISTORY_DENY = "INSERT INTO %s(User, Time) VALUES (?, ?)";
-    private static final String INSERT_HISTORY_ALLOW = "INSERT INTO %s VALUES (?, ?, ?)";
-    private static final String SELECT_HISTORY_BY_USER = "SELECT * FROM %s WHERE User = ? ORDER BY Time DESC";
-    private static final String SELECT_LATEST_HISTORY_ENTRY_BY_USER = "SELECT * FROM %s WHERE User = ? ORDER BY Time DESC LIMIT 1";
+    public static final String INSERT_HISTORY_DENY = "INSERT INTO %s(User, Time) VALUES (?, ?)";
+    public static final String INSERT_HISTORY_ALLOW = "INSERT INTO %s VALUES (?, ?, ?)";
+    public static final String SELECT_HISTORY_BY_USER = "SELECT * FROM %s WHERE User = ? ORDER BY Time DESC";
+    public static final String SELECT_LATEST_HISTORY_ENTRY_BY_USER = "SELECT * FROM %s WHERE User = ? ORDER BY Time DESC LIMIT 1";
 
     public static final short DEFAULT_PORT = 3306;
 
@@ -108,8 +108,8 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             throw new DatabaseInitializationException("SQLite connection test failed", exp);
         }
         try {
-            setup();
-        } catch (final SQLException exp) {
+            MigrationManager.migrate(this, SQLMigrationType.class);
+        } catch (final Exception exp) {
             close();
             throw new DatabaseInitializationException("SQLite database setup failed", exp);
         }
@@ -124,14 +124,20 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
         this.selectLatestHistoryEntryByUser = String.format(SELECT_LATEST_HISTORY_ENTRY_BY_USER, historyTable);
     }
 
-    private void setup() throws SQLException {
-        try (Connection connection = pool.getConnection()) {
-            connection.prepareStatement(String.format(CREATE_TABLE, tokenTable,
-                "(Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires VARCHAR(22), CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner))"))
-                .executeUpdate();
-            connection.prepareStatement(
-                String.format(CREATE_TABLE, historyTable, "(User BINARY(16) NOT NULL, TokenOwner BINARY(16), Time VARCHAR(22) NOT NULL)"))
-                .executeUpdate();
+    @Override
+    public Connection getConnection() throws SQLException {
+        return pool.getConnection();
+    }
+    
+    @Override
+    public String getTableName(SQLTable table) {
+        switch(table) {
+        case HISTORY:
+            return historyTable;
+        case TOKEN:
+            return tokenTable;
+        default:
+            return null;
         }
     }
 
@@ -160,7 +166,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(selectLatestHistoryEntryByUser);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
+                statement.setString(1, uniqueId.toString());
                 final ResultSet set = statement.executeQuery();
                 if (set.next()) {
                     final boolean state = set.getBytes("TokenOwner") != null;
@@ -187,12 +193,12 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(selectTokenByUser);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
+                statement.setString(1, uniqueId.toString());
                 final ResultSet set = statement.executeQuery();
                 if (set.next()) {
                     final OffsetDateTime time = TimeHelper.fromString(set.getString("Expires"));
-                    final String tokenHash = Hex.encodeHexString(set.getBytes("Token"));
-                    final UUID owner = UUIDHelper.toUniqueId(set.getBytes("Owner"));
+                    final String tokenHash = set.getString("Token");
+                    final UUID owner = UUIDHelper.fromString(set.getString("Owner"));
                     final int uses = set.getInt("Uses");
                     final Token token = new Token(owner, tokenHash, uses, time);
                     if (token.isExpired()) {
@@ -218,10 +224,10 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(deleteToken);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
-                statement.setBytes(2, Hex.decodeHex(tokenHash));
+                statement.setString(1, uniqueId.toString());
+                statement.setString(2, tokenHash);
                 statement.executeUpdate();
-            } catch (SQLException | DecoderException exp) {
+            } catch (SQLException exp) {
                 logger.log(LogTypeId.WARNING,
                     "Failed to delete token information of '" + tokenHash + "' owned by '" + uniqueId.toString() + "' from MySQL");
                 logger.log(LogTypeId.DEBUG, exp);
@@ -236,14 +242,15 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 byte[] tokenRaw = DigestUtils.sha1(tokenGen.makeKey(12));
                 try (Connection connection = pool.getConnection()) {
                     PreparedStatement statement = connection.prepareStatement(selectTokenByToken);
-                    statement.setBytes(1, tokenRaw);
+                    String tokenHash;
+                    statement.setString(1, tokenHash = Hex.encodeHexString(tokenRaw));
                     while (statement.executeQuery().next()) {
                         tokenRaw = DigestUtils.sha1(tokenGen.makeKey(12));
-                        statement.setBytes(1, tokenRaw);
+                        statement.setString(1, tokenHash = Hex.encodeHexString(tokenRaw));
                     }
                     statement = connection.prepareStatement(insertToken);
-                    statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
-                    statement.setBytes(2, tokenRaw);
+                    statement.setString(1, uniqueId.toString());
+                    statement.setString(2, tokenHash);
                     statement.setInt(3, uses);
                     statement.setObject(4, TimeHelper.toString(expires));
                     statement.executeUpdate();
@@ -268,9 +275,9 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(updateToken);
                 statement.setInt(1, token.getUses());
-                statement.setBytes(2, Hex.decodeHex(token.getToken()));
+                statement.setString(2, token.getToken());
                 statement.executeUpdate();
-            } catch (SQLException | DecoderException exp) {
+            } catch (SQLException exp) {
                 logger.log(LogTypeId.WARNING,
                     "Failed to send update of Token '" + token.getToken() + "' of '" + token.getOwner().toString() + "' to MySQL");
             }
@@ -285,7 +292,7 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryDeny);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
+                statement.setString(1, uniqueId.toString());
                 statement.setObject(2, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, false);
@@ -305,8 +312,8 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryAllow);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
-                statement.setBytes(2, UUIDHelper.fromUniqueId(targetId));
+                statement.setString(1, uniqueId.toString());
+                statement.setString(2, targetId.toString());
                 statement.setObject(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
@@ -326,12 +333,12 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             }
             try (Connection connection = pool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(selectTokenByToken);
-                statement.setBytes(1, Hex.decodeHex(tokenHash));
+                statement.setString(1, tokenHash);
                 final ResultSet set = statement.executeQuery();
                 if (!set.next()) {
                     return CompletableFuture.completedFuture(RequestResult.FAILED);
                 }
-                final UUID targetId = UUIDHelper.toUniqueId(set.getBytes("Owner"));
+                final UUID targetId = UUIDHelper.fromString(set.getString("Owner"));
                 final Token token = tokenCache.has(uniqueId) ? tokenCache.get(uniqueId)
                     : new Token(targetId, tokenHash, set.getInt("Uses"), TimeHelper.fromString(set.getString("Expires")));
                 if (token.use() == -1) {
@@ -340,13 +347,13 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
                 }
                 updateToken(token);
                 statement = connection.prepareStatement(insertHistoryAllow);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
-                statement.setBytes(2, UUIDHelper.fromUniqueId(targetId));
+                statement.setString(1, uniqueId.toString());
+                statement.setString(2, targetId.toString());
                 statement.setObject(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
                 return CompletableFuture.completedFuture(RequestResult.SUCCESS);
-            } catch (SQLException | DecoderException exp) {
+            } catch (SQLException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to insert history (allow) of '" + uniqueId.toString() + "' to MySQL");
             }
             return CompletableFuture.completedFuture(RequestResult.FAILED);
@@ -362,12 +369,12 @@ public class SQLiteDatabase extends Database implements ITickReceiver {
             final ArrayList<HistoryEntry> list = new ArrayList<>();
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(selectHistoryByUser);
-                statement.setBytes(1, UUIDHelper.fromUniqueId(uniqueId));
+                statement.setString(1, uniqueId.toString());
                 final ResultSet set = statement.executeQuery();
                 while (set.next()) {
                     final OffsetDateTime time = TimeHelper.fromString(set.getString("Time"));
-                    final byte[] target = set.getBytes("TokenOwner");
-                    list.add(new HistoryEntry(uniqueId, target == null ? null : UUIDHelper.toUniqueId(target), time));
+                    final String target = set.getString("TokenOwner");
+                    list.add(new HistoryEntry(uniqueId, target == null ? null : UUIDHelper.fromString(target), time));
                 }
             } catch (final SQLException exp) {
                 logger.log(LogTypeId.WARNING, "Failed to retrieve history of '" + uniqueId.toString() + "' from MySQL");

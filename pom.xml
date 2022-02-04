@@ -2,19 +2,21 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.lauriichan.minecraft.wildcard</groupId>
     <artifactId>wildcard-parent</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
     <packaging>pom</packaging>
 
     <properties>
         <wildcard.id>wildcard</wildcard.id>
         <wildcard.name>Wildcard</wildcard.name>
         <wildcard.author>Lauriichan</wildcard.author>
+        <wildcard.parent.version>${project.version}</wildcard.parent.version>
     </properties>
 
     <modules>
         <module>wildcard-core</module>
         <module>wildcard-vanilla</module>
         <module>wildcard-sponge</module>
+        <module>wildcard-migration</module>
     </modules>
 
     <dependencies>

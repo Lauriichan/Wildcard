@@ -55,17 +55,17 @@
     "command.history.self": "dir",
     "command.history.list.start": "$plugin.name &8- &7Verlauf von &#DB0F60$name",
     "command.history.list.item.deny": [
-      "&8[&#DB0F60$idx&7] \u00BB &7",
+      "&8[&#DB0F60$index&7] \u00BB &7",
       " $idxSize    &7Sperr Datum: &#DB0F60$time"
     ],
     "command.history.list.item.allow": [
-      "&8[&#DB0F60$idx&7] \u00BB &7",
+      "&8[&#DB0F60$index&7] \u00BB &7",
       " $idxSize    &7Token Besitzer: &#DB0F60$ownerName &8(&7$onwerId&8)",
       " $idxSize    &7Freischalt Datum: &#DB0F60$time"
     ],
-    "command.history.list.page.next": "&7Seite $page &8\\u00BB",
-    "command.history.list.page.info": " &8[ &7Seite $page &8] ",
-    "command.history.list.page.previous": "&8\u00AB &7Seite $page",
+    "command.history.list.page.next": " &7Seite $page &8\\u00BB",
+    "command.history.list.page.info": "&8[ &7Seite $page &8]",
+    "command.history.list.page.previous": "&8\u00AB &7Seite $page ",
     "command.history.list.end": "$plugin.name &8- &7Verlauf von &#DB0F60$name",
     "command.action.token.copy": "&7Drücke hier um den Token zu kopieren",
     "command.action.token.get": "&7Drücke hier um die Informationen des Tokens aufzurufen",

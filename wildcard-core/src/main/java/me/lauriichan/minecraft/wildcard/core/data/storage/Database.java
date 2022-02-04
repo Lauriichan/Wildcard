@@ -5,7 +5,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public abstract class Database {
+import me.lauriichan.minecraft.wildcard.migration.IMigrationSource;
+
+public abstract class Database implements IMigrationSource {
 
     protected final Executor executor;
 

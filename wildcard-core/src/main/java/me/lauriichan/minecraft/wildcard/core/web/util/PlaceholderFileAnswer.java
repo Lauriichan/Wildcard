@@ -63,7 +63,7 @@ public class PlaceholderFileAnswer extends SimpleFileAnswer {
 
         TemplateParser.parse(event, fileData);
         fileData = TemplateParser.strip(event, fileData);
-        PlaceholderParser.parse(event, fileData);
+        PlaceholderParser.parseFunction(event, fileData);
 
         Awaiter.of(manager.call(event)).await();
 

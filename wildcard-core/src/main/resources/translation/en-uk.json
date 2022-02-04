@@ -53,20 +53,20 @@
     "command.history.get.other": "$prefix Trying to get History of '&#DB0F60$user&7'...",
     "command.history.get.self": "$prefix Trying to get your History...",
     "command.history.self": "yourself",
-    "command.history.list.start": "$plugin.name &8- &7History of &#DB0F60W$name",
+    "command.history.list.start": "$plugin.name &8- &7History of &#DB0F60$name",
     "command.history.list.item.deny": [
-      "&8[&#DB0F60W$idx&7] \u00BB &7",
-      " $idxSize    &7Deny date: &#DB0F60W$time"
+      "&8[&#DB0F60$index&7] \u00BB &7",
+      " $idxSize    &7Deny date: &#DB0F60$time"
     ],
     "command.history.list.item.allow": [
-      "&8[&#DB0F60W$idx&7] \u00BB &7",
-      " $idxSize    &7Token owner: &#DB0F60W$ownerName &8(&7$onwerId&8)",
-      " $idxSize    &7Allow date: &#DB0F60W$time"
+      "&8[&#DB0F60$index&7] \u00BB &7",
+      " $idxSize    &7Token owner: &#DB0F60$ownerName &8(&7$onwerId&8)",
+      " $idxSize    &7Allow date: &#DB0F60$time"
     ],
-    "command.history.list.page.next": "&7Page $page &8\u00BB",
-    "command.history.list.page.info": " &8[ &7Page $page &8] ",
-    "command.history.list.page.previous": "&8\u00AB &7Page $page",
-    "command.history.list.end": "$plugin.name &8- &7History of &#DB0F60W$name",
+    "command.history.list.page.next": " &7Page $page &8\u00BB",
+    "command.history.list.page.info": "&8[ &7Page $page &8]",
+    "command.history.list.page.previous": "&8\u00AB &7Page $page ",
+    "command.history.list.end": "$plugin.name &8- &7History of &#DB0F60$name",
     "command.action.token.copy": "&7Click to copy Token",
     "command.action.token.get": "&7Click to get Token Information",
     "command.action.page.next": "&7Click to go to the next page",

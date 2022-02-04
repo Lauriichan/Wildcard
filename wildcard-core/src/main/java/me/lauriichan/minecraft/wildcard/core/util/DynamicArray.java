@@ -29,6 +29,15 @@ public final class DynamicArray<E> {
         this.expand = expand;
     }
 
+    public int length() {
+        read.lock();
+        try {
+            return size;
+        } finally {
+            read.unlock();
+        }
+    }
+
     public E get(final int index) {
         if (isNull(index)) {
             return null;
