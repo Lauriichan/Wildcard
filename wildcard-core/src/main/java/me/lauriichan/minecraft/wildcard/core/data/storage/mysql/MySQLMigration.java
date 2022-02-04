@@ -10,6 +10,7 @@ import me.lauriichan.minecraft.wildcard.core.data.storage.SQLTable;
 public abstract class MySQLMigration extends SQLMigration {
 
     private static final String SELECT_TABLE = "SHOW CREATE TABLE %s";
+    private static final String LIMIT_FORMAT = "LIMIT %s, %s";
 
     public MySQLMigration(SQLTable table) {
         super(table);
@@ -23,6 +24,11 @@ public abstract class MySQLMigration extends SQLMigration {
     @Override
     public String getFormat(ResultSet set) throws SQLException {
         return set.getString(2);
+    }
+    
+    @Override
+    public String getLimit(long offset, long limit) {
+        return String.format(LIMIT_FORMAT, offset, limit);
     }
 
 }

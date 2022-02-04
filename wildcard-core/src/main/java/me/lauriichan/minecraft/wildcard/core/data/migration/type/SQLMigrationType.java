@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import com.syntaxphoenix.syntaxapi.logging.ILogger;
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 
+import me.lauriichan.minecraft.wildcard.core.Wildcard;
 import me.lauriichan.minecraft.wildcard.core.data.migration.impl.SQLMigration;
 import me.lauriichan.minecraft.wildcard.core.data.storage.SQLDatabase;
 import me.lauriichan.minecraft.wildcard.core.data.storage.SQLTable;
@@ -24,9 +24,12 @@ import me.lauriichan.minecraft.wildcard.migration.MigrationType;
 
 public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigration> {
 
+    private static final long ROW_LIMIT = 500;
+
     private static final String CREATE_TABLE = "CREATE TABLE %s(%s)";
     private static final String RENAME_TABLE = "ALTER TABLE %s RENAME TO %s";
-    private static final String SELECT_TABLE = "SELECT * FROM %s LIMIT 100";
+    private static final String SELECT_TABLE = "SELECT * FROM %s ";
+    private static final String DROP_TABLE = "DROP TABLE %s";
 
     private static final Function<SQLTable, ArrayList<SQLMigration>> BUILDER = (i) -> new ArrayList<>();
 
@@ -58,51 +61,53 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
             return;
         }
         ILogger logger = Singleton.get(ILogger.class);
-        ArrayList<CompletableFuture<Void>> tasks = new ArrayList<>();
         for (SQLTable table : SQLTable.values()) {
-            tasks.add(CompletableFuture.runAsync(() -> {
-                if (!tableMigrations.containsKey(table)) {
+            if (!tableMigrations.containsKey(table)) {
+                return;
+            }
+            ArrayList<SQLMigration> migrations = tableMigrations.get(table);
+            if (migrations.isEmpty()) {
+                return; // How?
+            }
+            Collections.sort(migrations);
+            SQLMigration first = migrations.get(0);
+            try (Connection connection = source.getConnection()) {
+                State state = getFormatState(first, source.getTableName(table), first.getOldFormat(), connection);
+                switch (state) {
+                case LEGACY:
+                    break;
+                case NOT_AVAILABLE:
+                    PreparedStatement statement = connection
+                        .prepareStatement(String.format(CREATE_TABLE, source.getTableName(table), first.getNewFormat()));
+                    statement.closeOnCompletion();
+                    statement.executeUpdate();
+                default: // We're up2date, no migration required
                     return;
                 }
-                ArrayList<SQLMigration> migrations = tableMigrations.get(table);
-                if (migrations.isEmpty()) {
-                    return; // How?
-                }
-                Collections.sort(migrations);
-                SQLMigration first = migrations.get(0);
-                try (Connection connection = source.getConnection()) {
-                    State state = getFormatState(first, source.getTableName(table), first.getOldFormat(), connection);
-                    switch (state) {
-                    case LEGACY:
-                        break;
-                    case NOT_AVAILABLE:
-                        connection.prepareStatement(String.format(CREATE_TABLE, table, first.getNewFormat())).executeUpdate();
-                    default: // We're up2date, no migration required
-                        return;
+                logger.log(LogTypeId.WARNING, "Table '" + source.getTableName(table) + "' has an old format, migrating...");
+                // We're not up2date so we check for the oldest version which is compatible
+                boolean migrate = false;
+                for (int i = migrations.size() - 1; i >= 0; i--) {
+                    SQLMigration migration = migrations.get(i);
+                    if (getFormatState(migration, source.getTableName(table), migration.getOldFormat(), connection) == State.UP2DATE) {
+                        migrate = true; // Now we know which version is the oldest and can start to migrate to newer ones
+                        continue;
                     }
-                    // We're not up2date so we check for the oldest version which is compatbile
-                    boolean migrate = false;
-                    for (int i = migrations.size() - 1; i >= 0; i--) {
-                        SQLMigration migration = migrations.get(i);
-                        if (getFormatState(migration, source.getTableName(table), migration.getOldFormat(), connection) == State.UP2DATE) {
-                            migrate = true; // Now we know which version is the oldest and can start to migrate to newer ones
-                            continue;
+                    if (!migrate) {
+                        if (i == 0) { // Force migrate oldest migration
+                            i = migrations.size();
+                            migrate = true;
                         }
-                        if (!migrate) {
-                            continue;
-                        }
-                        if (!applyMigration(logger, connection, source, migration)) {
-                            break;
-                        }
+                        continue;
                     }
-                } catch (SQLException e) {
-                    logger.log(LogTypeId.ERROR, "Failed to migrate table '" + table + "'");
-                    logger.log(LogTypeId.ERROR, e);
+                    if (!applyMigration(logger, connection, source, migration)) {
+                        throw new IllegalStateException("Failed to migrate database '" + source.getClass().getSimpleName() + "'!");
+                    }
                 }
-            }));
-        }
-        for (int i = 0; i < tasks.size(); i++) {
-            tasks.get(i).join(); // Await all tasks until completion
+            } catch (SQLException e) {
+                logger.log(LogTypeId.ERROR, "Failed to migrate table '" + source.getTableName(table) + "'");
+                logger.log(LogTypeId.ERROR, e);
+            }
         }
     }
 
@@ -111,35 +116,61 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
         final String oldFormat = migration.getOldFormat();
         final String newFormat = migration.getNewFormat();
         final String tableLegacy = table + "_LEGACY";
-        logger.log(LogTypeId.WARNING, "Table '" + table + "' has an old format, migrating...");
         // Rename table
         PreparedStatement statement = connection.prepareStatement(String.format(RENAME_TABLE, table, tableLegacy));
-        statement.executeUpdate();
+        statement.execute();
+        statement.close();
         // Create new table
         statement = connection.prepareStatement(String.format(CREATE_TABLE, table, newFormat));
         statement.executeUpdate();
         // Request table data
+        final String selectLegacyTable = String.format(SELECT_TABLE, tableLegacy);
         try {
-            statement = connection.prepareStatement(SELECT_TABLE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            logger.log(LogTypeId.INFO, "[" + migration.getId() + "] Migrated 0 entries of Table '" + table + "'...");
+            long amount = 0;
+            PreparedStatement batch = migration.startBatch(connection, table);
             while (true) {
+                statement = connection.prepareStatement(selectLegacyTable + migration.getLimit(amount, ROW_LIMIT));
+                statement.closeOnCompletion();
                 ResultSet set = statement.executeQuery();
-                if (!set.next()) {
+                int next = 0;
+                batch.clearBatch();
+                while (set.next()) {
+                    migration.migrateBatch(batch, set);
+                    next++;
+                }
+                if(!set.isClosed()) {
+                    set.close();
+                }
+                if (next == 0) {
+                    batch.close();
                     break;
                 }
-                set.beforeFirst();
-                migration.migrateBatch(set, connection, table);
-                set.beforeFirst();
-                while (set.next()) {
-                    set.deleteRow();
-                }
+                batch.executeBatch();
+                amount += next;
+                logger.log(LogTypeId.INFO, "[" + migration.getId() + "] Migrated " + amount + " entries of Table '" + table + "'...");
             }
+            logger.log(LogTypeId.INFO, "[" + migration.getId() + "] Migrated a total of " + amount + " entries of Table '" + table + "'!");
         } catch (SQLException exp) {
             logger.log(LogTypeId.ERROR,
-                "Failed to migrate table '" + table + "' to from (" + oldFormat + ") to (" + newFormat + ") [" + migration.getId() + "]");
+                "Failed to migrate table '" + table + "' from (" + oldFormat + ") to (" + newFormat + ") [" + migration.getId() + "]");
             logger.log(LogTypeId.ERROR, exp);
             return false;
         }
-        logger.log(LogTypeId.WARNING, "Migration of Table '" + table + "' was done successfully");
+        logger.log(LogTypeId.WARNING, "[" + migration.getId() + "] Migration of Table '" + table + "' was done successfully");
+        logger.log(LogTypeId.WARNING, "[" + migration.getId() + "] Dropping old table '" + tableLegacy + "'!");
+        try {
+            statement = connection.prepareStatement(String.format(DROP_TABLE, tableLegacy));
+            statement.execute();
+            statement.close();
+        } catch (SQLException exp) {
+            logger.log(LogTypeId.WARNING, "[" + migration.getId() + "] Failed to drop old table '" + tableLegacy + "'!");
+            if (Wildcard.isDebug()) {
+                logger.log(LogTypeId.DEBUG, exp);
+            }
+            return true;
+        }
+        logger.log(LogTypeId.WARNING, "[" + migration.getId() + "] Old table '" + tableLegacy + "' dropped successfully!");
         return true;
     }
 
@@ -149,6 +180,9 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
             return State.NOT_AVAILABLE;
         }
         String format = extractFormat(migration.getFormat(set));
+        if(!set.isClosed()) {
+            set.close();
+        }
         if (format.equals(oldFormat)) {
             return State.LEGACY;
         }
@@ -156,7 +190,7 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
     }
 
     private String extractFormat(String input) {
-        return (input = input.split("(", 2)[1]).substring(0, input.length() - 1);
+        return (input = input.split("\\(", 2)[1]).substring(0, input.length() - 1);
     }
 
     private static enum State {

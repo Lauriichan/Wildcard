@@ -32,16 +32,17 @@ public final class HistoryMigration2022_02_04_0_40 extends MySQLMigration {
     }
 
     @Override
-    public void migrateBatch(ResultSet legacyData, Connection connection, String table) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(String.format(MySQLDatabase.INSERT_HISTORY_ALLOW, table));
-        while (legacyData.next()) {
-            statement.setString(1, UUIDHelper.toUniqueId(legacyData.getBytes("User")).toString());
-            byte[] owner = legacyData.getBytes("TokenOwner");
-            statement.setString(2, owner == null ? null : UUIDHelper.toUniqueId(owner).toString());
-            statement.setObject(3, legacyData.getObject("Time", OffsetDateTime.class));
-            statement.addBatch();
-        }
-        statement.executeUpdate();
+    public PreparedStatement startBatch(Connection connection, String table) throws SQLException {
+        return connection.prepareStatement(String.format(MySQLDatabase.INSERT_HISTORY_ALLOW, table));
+    }
+
+    @Override
+    public void migrateBatch(PreparedStatement statement, ResultSet legacyData) throws SQLException {
+        statement.setString(1, UUIDHelper.toUniqueId(legacyData.getBytes("User")).toString());
+        byte[] owner = legacyData.getBytes("TokenOwner");
+        statement.setString(2, owner == null ? null : UUIDHelper.toUniqueId(owner).toString());
+        statement.setObject(3, legacyData.getObject("Time", OffsetDateTime.class));
+        statement.addBatch();
     }
 
     @Override

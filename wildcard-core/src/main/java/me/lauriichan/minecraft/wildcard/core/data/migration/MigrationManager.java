@@ -11,6 +11,7 @@ import com.syntaxphoenix.syntaxapi.logging.ILogger;
 import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
 import com.syntaxphoenix.syntaxapi.reflection.ClassCache;
 
+import me.lauriichan.minecraft.wildcard.core.Wildcard;
 import me.lauriichan.minecraft.wildcard.core.util.DynamicArray;
 import me.lauriichan.minecraft.wildcard.core.util.InstanceCreator;
 import me.lauriichan.minecraft.wildcard.core.util.ReflectHelper;
@@ -20,6 +21,7 @@ import me.lauriichan.minecraft.wildcard.core.util.source.PathSource;
 import me.lauriichan.minecraft.wildcard.migration.IMigrationManager;
 import me.lauriichan.minecraft.wildcard.migration.IMigrationSource;
 import me.lauriichan.minecraft.wildcard.migration.Migration;
+import me.lauriichan.minecraft.wildcard.migration.MigrationProcessor;
 import me.lauriichan.minecraft.wildcard.migration.MigrationProvider;
 import me.lauriichan.minecraft.wildcard.migration.MigrationTarget;
 import me.lauriichan.minecraft.wildcard.migration.MigrationType;
@@ -30,16 +32,19 @@ public final class MigrationManager implements IMigrationManager {
     private final Registry<Class<?>, MigrationType<?, ?>> types = new Registry<>();
 
     public MigrationManager() {
-        ILogger logger = Singleton.get(ILogger.class);
-        try (BufferedReader reader = PathSource.ofResource("META-INF/migrations").openReader()) {
+        ILogger logger = Wildcard.getLogger();
+        try (BufferedReader reader = PathSource.ofResource(MigrationProcessor.MIGRATION_RESOURCE).openReader()) {
             String line;
             while ((line = reader.readLine()) != null) {
+                if(line == null || line.trim().isEmpty()) {
+                    continue;
+                }
                 Class<?> clazz = ClassCache.getClass(line);
                 if (clazz == null) {
                     logger.log(LogTypeId.WARNING, "Couldn't find migration class '" + line + "'!");
                     continue;
                 }
-                if (MigrationProvider.class.isAssignableFrom(clazz)) {
+                if (!MigrationProvider.class.isAssignableFrom(clazz)) {
                     logger.log(LogTypeId.WARNING, "Migration class '" + clazz.getSimpleName() + "' is not a MigrationProvider!");
                     continue;
                 }
@@ -87,8 +92,7 @@ public final class MigrationManager implements IMigrationManager {
                 migrations.add(new MigrationTarget<>(migration, provider));
             }
         } catch (IOException exp) {
-            logger.log(LogTypeId.ERROR, "Failed to load migrations!");
-            logger.log(LogTypeId.ERROR, exp);
+            throw new IllegalStateException("Failed to load migrations!", exp);
         }
     }
 
@@ -101,7 +105,7 @@ public final class MigrationManager implements IMigrationManager {
             try {
                 migrationType = InstanceCreator.create(type, Singleton.getInjects());
             } catch (Exception e) {
-                ILogger logger = Singleton.get(ILogger.class);
+                ILogger logger = Wildcard.getLogger();
                 logger.log(LogTypeId.WARNING, "Failed to create instance of migration type '" + type.getSimpleName() + "'!");
                 logger.log(LogTypeId.WARNING, e);
                 return null;
@@ -133,7 +137,7 @@ public final class MigrationManager implements IMigrationManager {
         if (migration == null) {
             throw new IllegalStateException("Can't find migration type '" + type.getSimpleName() + "'!");
         }
-        if (migration.getSource().isAssignableFrom(source.getClass())) {
+        if (!migration.getSource().isAssignableFrom(source.getClass())) {
             throw new IllegalArgumentException("migration source '" + source.getClass().getSimpleName()
                 + "' is not compatible with migration type '" + type.getSimpleName() + "'!");
         }

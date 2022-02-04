@@ -33,15 +33,16 @@ public final class TokenMigration2022_02_04_0_40 extends SQLiteMigration {
     }
 
     @Override
-    public void migrateBatch(ResultSet legacyData, Connection connection, String table) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(String.format(SQLiteDatabase.INSERT_TOKEN, table));
-        while (legacyData.next()) {
-            statement.setString(1, UUIDHelper.toUniqueId(legacyData.getBytes("Owner")).toString());
-            statement.setString(2, Hex.encodeHexString(legacyData.getBytes("Token")));
-            statement.setString(3, legacyData.getString("Expires"));
-            statement.addBatch();
-        }
-        statement.executeUpdate();
+    public PreparedStatement startBatch(Connection connection, String table) throws SQLException {
+        return connection.prepareStatement(String.format(SQLiteDatabase.INSERT_TOKEN, table));
+    }
+
+    @Override
+    public void migrateBatch(PreparedStatement statement, ResultSet legacyData) throws SQLException {
+        statement.setString(1, UUIDHelper.toUniqueId(legacyData.getBytes("Owner")).toString());
+        statement.setString(2, Hex.encodeHexString(legacyData.getBytes("Token")));
+        statement.setString(3, legacyData.getString("Expires"));
+        statement.addBatch();
     }
 
     @Override

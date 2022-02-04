@@ -80,7 +80,9 @@ public final class MigrationProcessor extends AbstractProcessor {
             Iterator<String> iterator = migrations.iterator();
             while (iterator.hasNext()) {
                 writer.write(iterator.next());
-                writer.write('\n');
+                if (iterator.hasNext()) {
+                    writer.write('\n');
+                }
             }
             writer.flush();
         } catch (IOException e) {

@@ -57,14 +57,13 @@ public final class WildcardCore {
 
     private final Container<ClassLookupProvider> classProvider = Container.of();
     private final Container<Injections> injections = Container.of();
-    
 
     public WildcardCore(final IWildcardPlugin plugin) {
         this.plugin = plugin;
         this.logger = new JavaLogger(plugin.getAdapter());
-        this.componentParser = new PlatformComponentParser(plugin.getAdapter().getComponentAdapter());
         Singleton.inject(this);
         Singleton.inject(logger);
+        this.componentParser = new PlatformComponentParser(plugin.getAdapter().getComponentAdapter());
         this.eventManager = new EventManager(logger);
         eventManager.registerEvents(new PathListener());
         eventManager.registerEvents(new CommandListener());
@@ -119,7 +118,7 @@ public final class WildcardCore {
         classProvider.replace(new ClassLookupProvider());
         injections.replace(new Injections(classProvider.get())).get().setup();
     }
-    
+
     public void registerCommands() {
         register(new WildcardCommand());
     }
@@ -216,7 +215,7 @@ public final class WildcardCore {
     public EventManager getEventManager() {
         return eventManager;
     }
-    
+
     public PlatformComponentParser getComponentParser() {
         return componentParser;
     }

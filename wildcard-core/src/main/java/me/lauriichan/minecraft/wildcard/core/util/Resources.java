@@ -46,7 +46,7 @@ public final class Resources {
             return new URI(("jar:file:/" + core.getPlugin().getJarFile().getAbsolutePath().replace('\\', '/').replace(" ", "%20") + "!/")
                 .replace("//", "/"));
         } catch (URISyntaxException e) {
-            System.err.println(Exceptions.stackTraceToString(e));
+            logger.log(e);
             return core.getPlugin().getJarFile().toURI();
         }
     }
@@ -59,9 +59,21 @@ public final class Resources {
             return root.replace(jarFile ? getPathFor(jarUri, "/") : Paths.get(jarUri).resolve("classes")).lock().get();
         } catch (IOException e) {
             logger.log(LogTypeId.ERROR, "Failed to retrieve resource root!");
-            logger.log(LogTypeId.ERROR, Exceptions.stackTraceToString(e));
+            logger.log(LogTypeId.ERROR, e);
             return null;
         }
+    }
+
+    private Path getPathFor(final URI uri, final String path) throws IOException {
+        try {
+            return FileSystems.getFileSystem(uri).getPath(path);
+        } catch (final Exception exp) {
+            return FileSystems.newFileSystem(uri, Collections.emptyMap()).getPath(path);
+        }
+    }
+
+    public Path getInternalPathForImpl(final String path) {
+        return getInternalRootImpl().resolveSibling(path);
     }
 
     public Path getExternalPathForImpl(final String path) {
@@ -79,14 +91,6 @@ public final class Resources {
             logger.log(LogTypeId.ERROR, "Failed to retrieve resource '" + path + "'!");
             logger.log(LogTypeId.ERROR, Exceptions.stackTraceToString(exp));
             return new File(folder, path).toPath();
-        }
-    }
-
-    private Path getPathFor(final URI uri, final String path) throws IOException {
-        try {
-            return FileSystems.getFileSystem(uri).getPath(path);
-        } catch (final Exception exp) {
-            return FileSystems.newFileSystem(uri, Collections.emptyMap()).getPath(path);
         }
     }
 
@@ -127,6 +131,10 @@ public final class Resources {
 
     public static Path getExternalPathFor(final String path) {
         return Singleton.get(Resources.class).getExternalPathForImpl(path);
+    }
+
+    public static Path getInternalPathFor(final String path) {
+        return Singleton.get(Resources.class).getInternalPathForImpl(path);
     }
 
     public static Path getInternalRoot() {

@@ -3,6 +3,10 @@ package me.lauriichan.minecraft.wildcard.core.util;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
+import com.syntaxphoenix.syntaxapi.logging.LogTypeId;
+
+import me.lauriichan.minecraft.wildcard.core.Wildcard;
+
 public final class Singleton {
 
     public static final Singleton INSTANCE = new Singleton();
@@ -40,16 +44,27 @@ public final class Singleton {
             array.add(object);
             return true;
         } catch (final Exception exp) {
+            if (Wildcard.isDebug()) {
+                Wildcard.getLogger().log(LogTypeId.DEBUG, exp);
+            }
             return false;
         }
     }
 
     public boolean put(final Object object) {
+        if (object == null) {
+            return false;
+        }
         final int index = array.indexOf(object);
         if (index != -1) {
             return false;
         }
         array.add(object);
+        Class<?> type = object.getClass();
+        if (!instances.containsKey(type)) {
+            instances.put(type, object);
+            types.add(type);
+        }
         return true;
     }
 

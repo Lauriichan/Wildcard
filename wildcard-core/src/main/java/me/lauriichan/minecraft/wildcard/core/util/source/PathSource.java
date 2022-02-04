@@ -31,7 +31,7 @@ public final class PathSource extends DataSource {
 
     @Override
     public InputStream openStream() throws IOException {
-        return Files.newInputStream(path, StandardOpenOption.READ);
+        return path.getFileSystem().provider().newInputStream(path, StandardOpenOption.READ);
     }
 
     public static PathSource ofResource(String rawPath) {

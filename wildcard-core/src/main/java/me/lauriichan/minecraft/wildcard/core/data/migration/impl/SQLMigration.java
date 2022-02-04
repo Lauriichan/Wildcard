@@ -1,6 +1,7 @@
 package me.lauriichan.minecraft.wildcard.core.data.migration.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,10 +24,14 @@ public abstract class SQLMigration extends MigrationProvider {
 
     public abstract String getNewFormat();
 
+    public abstract String getLimit(long offset, long limit);
+
     public abstract String getFormat(ResultSet set) throws SQLException;
 
     public abstract ResultSet requestTableSql(String table, Connection connection) throws SQLException;
 
-    public abstract void migrateBatch(ResultSet legacyData, Connection connection, String table) throws SQLException;
+    public abstract PreparedStatement startBatch(Connection connection, String table) throws SQLException;
+
+    public abstract void migrateBatch(PreparedStatement statement, ResultSet entry) throws SQLException;
 
 }
