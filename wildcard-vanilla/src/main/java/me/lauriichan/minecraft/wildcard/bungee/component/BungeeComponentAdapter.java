@@ -19,7 +19,7 @@ public class BungeeComponentAdapter implements IPlatformComponentAdapter<BaseCom
 
     @Override
     public PlatformComponent create() {
-        return null;
+        return new BungeeComponent(this);
     }
 
     @Override

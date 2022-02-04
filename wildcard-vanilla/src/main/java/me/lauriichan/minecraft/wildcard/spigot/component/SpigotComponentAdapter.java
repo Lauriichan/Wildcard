@@ -19,7 +19,7 @@ public class SpigotComponentAdapter implements IPlatformComponentAdapter<BaseCom
 
     @Override
     public PlatformComponent create() {
-        return null;
+        return new SpigotComponent(this);
     }
 
     @Override
