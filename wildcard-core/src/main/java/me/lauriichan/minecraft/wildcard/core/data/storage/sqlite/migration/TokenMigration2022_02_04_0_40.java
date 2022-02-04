@@ -41,7 +41,8 @@ public final class TokenMigration2022_02_04_0_40 extends SQLiteMigration {
     public void migrateBatch(PreparedStatement statement, ResultSet legacyData) throws SQLException {
         statement.setString(1, UUIDHelper.toUniqueId(legacyData.getBytes("Owner")).toString());
         statement.setString(2, Hex.encodeHexString(legacyData.getBytes("Token")));
-        statement.setString(3, legacyData.getString("Expires"));
+        statement.setInt(3, legacyData.getInt("Uses"));
+        statement.setString(4, legacyData.getString("Expires"));
         statement.addBatch();
     }
 

@@ -42,7 +42,8 @@ public final class TokenMigration2022_02_04_0_40 extends MySQLMigration {
     public void migrateBatch(PreparedStatement statement, ResultSet legacyData) throws SQLException {
         statement.setString(1, UUIDHelper.toUniqueId(legacyData.getBytes("Owner")).toString());
         statement.setString(2, Hex.encodeHexString(legacyData.getBytes("Token")));
-        statement.setObject(3, legacyData.getObject("Expires", OffsetDateTime.class));
+        statement.setInt(3, legacyData.getInt("Uses"));
+        statement.setObject(4, legacyData.getObject("Expires", OffsetDateTime.class));
         statement.addBatch();
     }
 
