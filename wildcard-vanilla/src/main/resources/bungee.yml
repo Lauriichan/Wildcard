@@ -1,5 +1,5 @@
-main: ${project.groupId}.${wildcard.id}.bungee.${wildcard.name}Bungee
-name: ${project.name}
+main: ${project.groupId}.bungee.${wildcard.name}Bungee
+name: ${wildcard.name}
 version: ${project.version}
 api-version: 1.13
 author: ${project.author}
