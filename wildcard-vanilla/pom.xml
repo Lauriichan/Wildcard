@@ -6,12 +6,13 @@
         <version>2.1.1</version>
     </parent>
     <artifactId>wildcard-vanilla</artifactId>
+    <version>${project.parent.version}.1</version>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wildcard-core</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- Spigot -->
@@ -63,6 +64,12 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.32.3.3</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Connection Pool-->
