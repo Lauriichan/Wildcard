@@ -1,7 +1,10 @@
 package me.lauriichan.minecraft.wildcard.bungee;
 
 import java.io.File;
+import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
+
+import org.sqlite.JDBC;
 
 import com.syntaxphoenix.syntaxapi.utils.java.tools.Container;
 
@@ -33,8 +36,17 @@ public final class WildcardBungee extends Plugin implements IWildcardPlugin {
     private boolean setup = false;
 
     public WildcardBungee() {
+        registerSQLite();
         this.core = new WildcardCore(this);
         Singleton.get(BungeeVersionProvider.class);
+    }
+
+    private void registerSQLite() {
+        try {
+            DriverManager.registerDriver(new JDBC());
+        } catch (Exception exp) {
+            // Ignore
+        }
     }
 
     /*
