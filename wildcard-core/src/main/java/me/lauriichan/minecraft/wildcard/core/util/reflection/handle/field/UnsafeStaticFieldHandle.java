@@ -2,6 +2,7 @@ package me.lauriichan.minecraft.wildcard.core.util.reflection.handle.field;
 
 import java.lang.reflect.Field;
 
+@SuppressWarnings("restriction")
 public final class UnsafeStaticFieldHandle extends UnsafeFieldHandle<Field> {
 
     private final Field handle;

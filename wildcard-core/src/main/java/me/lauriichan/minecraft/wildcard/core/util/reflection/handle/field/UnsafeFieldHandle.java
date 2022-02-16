@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import sun.misc.Unsafe;
 
+@SuppressWarnings("restriction")
 public abstract class UnsafeFieldHandle<O> implements IFieldHandle<O> {
 
     protected static final Unsafe UNSAFE = getUnsafe();
