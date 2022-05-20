@@ -1,7 +1,7 @@
 package me.lauriichan.minecraft.wildcard.sponge.inject;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.spongepowered.api.Sponge;
 
@@ -25,8 +25,8 @@ public class SpongeCommands extends Injector<SpongeCommand> {
         if (transfer == null || registry.isRegistered(transfer.getId())) {
             return;
         }
-        List<String> names = Arrays.asList(transfer.getAliases());
-        names.add(transfer.getName());
+        ArrayList<String> names = new ArrayList<>();
+        Collections.addAll(names, transfer.getAliases());
         Sponge.getCommandManager().register(((WildcardSponge) transfer.getCore().getPlugin()).getContainer(), transfer, names);
         registry.register(transfer);
     }
