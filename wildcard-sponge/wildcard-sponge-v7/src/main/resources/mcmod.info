@@ -1,0 +1,14 @@
+[{
+    "modid": "${wildcard.id}",
+    "name": "${wildcard.name}",
+    "version": "${project.version}",
+    "authorList": [
+        "Lauriichan"
+    ],
+    "dependencies":[
+        "spongeapi@7.0.0"
+    ],
+    "requiredMods":[
+        "spongeapi@7.0.0"
+    ]
+}]
