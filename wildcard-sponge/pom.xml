@@ -6,6 +6,12 @@
         <version>2.1.1</version>
     </parent>
     <artifactId>wildcard-sponge</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>wildcard-sponge-v8</module>
+        <module>wildcard-sponge-v7</module>
+    </modules>
 
     <repositories>
         <repository>
@@ -32,16 +38,6 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.32.3.3</version>
-        </dependency>
-
-
-        <!-- Sponge -->
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>8.0.0</version>
-            <type>jar</type>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

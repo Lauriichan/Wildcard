@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>me.lauriichan.minecraft.wildcard</groupId>
+        <artifactId>wildcard-sponge</artifactId>
+        <version>2.1.1</version>
+    </parent>
+    <artifactId>wildcard-sponge-v8</artifactId>
+    <version>${project.parent.version}-8</version>
+
+    <dependencies>
+        <!-- Sponge -->
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>8.0.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
