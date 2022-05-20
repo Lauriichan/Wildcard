@@ -6,7 +6,7 @@
         <version>2.1.1</version>
     </parent>
     <artifactId>wildcard-sponge-v7</artifactId>
-    <version>${project.parent.version}-7</version>
+    <version>${project.parent.version}.1-7</version>
 
     <dependencies>
         <!-- Sponge -->
@@ -17,5 +17,65 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+
+        <!-- SLF4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>${project.groupId}.shaded.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.apache.commons.io</pattern>
+                            <shadedPattern>${project.groupId}.shaded.commons.io</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.apache.commons.codec</pattern>
+                            <shadedPattern>${project.groupId}.shaded.commons.codec</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.mysql</pattern>
+                            <shadedPattern>${project.groupId}.shaded.mysql</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.syntaxphoenix.syntaxapi</pattern>
+                            <shadedPattern>${project.groupId}.shaded.syntaxapi</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
