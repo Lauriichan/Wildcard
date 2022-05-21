@@ -42,7 +42,7 @@ public final class PlayerListener extends ConnectionListener implements Listener
                 return;
             }
             event.disallow(Result.KICK_OTHER, BaseComponent.toLegacyText(componentAdapter.asHandle(Translation.getDefault()
-                .translateComponent(core.getComponentParser(), "unpermitted.join", "server", adapter.getServerName()))));
+                .translateComponent(core.getComponentParser(), "unpermitted.join", "server", core.getServerName()))));
         }).join();
     }
 

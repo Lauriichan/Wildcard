@@ -2,5 +2,5 @@ main: ${project.groupId}.spigot.${wildcard.name}Spigot
 name: ${wildcard.name}
 version: ${project.version}
 api-version: 1.13
-author: ${project.author}
-website: www.playuniverse.org
+author: ${wildcard.author}
+website: https://github.com/Lauriichan/Wildcard

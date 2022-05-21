@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import me.lauriichan.minecraft.wildcard.spigot.SpigotAdapter;
@@ -15,11 +14,6 @@ public final class SpigotAdapter1_8 extends SpigotAdapter {
 
     private final Map<Color, ChatColor> colorMap = fillColors();
     private final Color[] colors = colorMap.keySet().toArray(new Color[colorMap.size()]);
-
-    @Override
-    public String getServerName() {
-        return Bukkit.getServer().getName();
-    }
 
     @Override
     public void applyColor(final TextComponent component, final Color color) {

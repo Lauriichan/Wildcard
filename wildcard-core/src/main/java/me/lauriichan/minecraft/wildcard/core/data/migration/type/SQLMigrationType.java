@@ -61,6 +61,7 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
             return;
         }
         ILogger logger = Singleton.get(ILogger.class);
+        loop:
         for (SQLTable table : SQLTable.values()) {
             if (!tableMigrations.containsKey(table)) {
                 return;
@@ -72,24 +73,28 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
             Collections.sort(migrations);
             SQLMigration first = migrations.get(0);
             try (Connection connection = source.getConnection()) {
-                State state = getFormatState(first, source.getTableName(table), first.getOldFormat(), connection);
+                State state = getFormatState(first, source.getTableName(table), first.getNewFormat(), connection, false);
                 switch (state) {
                 case LEGACY:
                     break;
                 case NOT_AVAILABLE:
+                    logger.log(LogTypeId.INFO, "Table '" + source.getTableName(table) + "' doesn't exist, creating...");
                     PreparedStatement statement = connection
                         .prepareStatement(String.format(CREATE_TABLE, source.getTableName(table), first.getNewFormat()));
                     statement.closeOnCompletion();
                     statement.executeUpdate();
+                    logger.log(LogTypeId.INFO, "Table '" + source.getTableName(table) + "' was successfully created!");
+                    continue loop;
                 default: // We're up2date, no migration required
-                    return;
+                    logger.log(LogTypeId.INFO, "Table '" + source.getTableName(table) + "' is up2date!");
+                    continue loop;
                 }
                 logger.log(LogTypeId.WARNING, "Table '" + source.getTableName(table) + "' has an old format, migrating...");
                 // We're not up2date so we check for the oldest version which is compatible
                 boolean migrate = false;
                 for (int i = migrations.size() - 1; i >= 0; i--) {
                     SQLMigration migration = migrations.get(i);
-                    if (getFormatState(migration, source.getTableName(table), migration.getOldFormat(), connection) == State.UP2DATE) {
+                    if (!migrate && getFormatState(migration, source.getTableName(table), migration.getNewFormat(), connection, true) == State.UP2DATE) {
                         migrate = true; // Now we know which version is the oldest and can start to migrate to newer ones
                         continue;
                     }
@@ -139,7 +144,7 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
                     migration.migrateBatch(batch, set);
                     next++;
                 }
-                if(!set.isClosed()) {
+                if (!set.isClosed()) {
                     set.close();
                 }
                 if (next == 0) {
@@ -174,16 +179,16 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
         return true;
     }
 
-    private final State getFormatState(SQLMigration migration, String table, String oldFormat, Connection connection) throws SQLException {
+    private final State getFormatState(SQLMigration migration, String table, String format, Connection connection, boolean flag) throws SQLException {
         ResultSet set = migration.requestTableSql(table, connection);
         if (!set.next()) {
             return State.NOT_AVAILABLE;
         }
-        String format = extractFormat(migration.getFormat(set));
-        if(!set.isClosed()) {
+        String tableFormat = extractFormat(migration.getFormat(set));
+        if (!set.isClosed()) {
             set.close();
         }
-        if (format.equals(oldFormat)) {
+        if (tableFormat.equals(format) == flag) {
             return State.LEGACY;
         }
         return State.UP2DATE;

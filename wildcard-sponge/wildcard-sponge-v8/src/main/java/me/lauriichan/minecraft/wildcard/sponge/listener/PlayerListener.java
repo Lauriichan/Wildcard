@@ -38,7 +38,7 @@ public class PlayerListener extends ConnectionListener {
                 return;
             }
             event.connection().close(componentAdapter.asHandle(Translation.getDefault().translateComponent(core.getComponentParser(),
-                "unpermitted.join", "server", adapter.getServerName()))[0]);
+                "unpermitted.join", "server", core.getServerName()))[0]);
         }).join();
     }
 

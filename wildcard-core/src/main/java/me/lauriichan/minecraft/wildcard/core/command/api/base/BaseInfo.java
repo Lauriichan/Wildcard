@@ -72,7 +72,7 @@ public abstract class BaseInfo {
     }
 
     public final String getName(final UUID uniqueId) {
-        return uniqueId == WildcardCore.SERVER_UID ? getAdapter().getServerName() : getService().getName(uniqueId);
+        return uniqueId == WildcardCore.SERVER_UID ? getCore().getServerName() : getService().getName(uniqueId);
     }
 
     public final UUID getUniqueId(final String name) {

@@ -2,7 +2,7 @@ main: ${project.groupId}.bungee.${wildcard.name}Bungee
 name: ${wildcard.name}
 version: ${project.version}
 api-version: 1.13
-author: ${project.author}
-website: www.playuniverse.org
+author: ${wildcard.author}
+website: https://github.com/Lauriichan/Wildcard
 libraries:
     - org.xerial:sqlite-jdbc:3.36.0.3

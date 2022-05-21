@@ -28,6 +28,7 @@ import me.lauriichan.minecraft.wildcard.core.data.storage.RequestResult;
 import me.lauriichan.minecraft.wildcard.core.data.storage.SQLDatabase;
 import me.lauriichan.minecraft.wildcard.core.data.storage.SQLTable;
 import me.lauriichan.minecraft.wildcard.core.data.storage.Token;
+import me.lauriichan.minecraft.wildcard.core.data.storage.util.TimeHelper;
 import me.lauriichan.minecraft.wildcard.core.data.storage.util.UUIDHelper;
 import me.lauriichan.minecraft.wildcard.core.settings.DatabaseSettings;
 import me.lauriichan.minecraft.wildcard.core.settings.PluginSettings;
@@ -93,8 +94,9 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
         config.setMaximumPoolSize(Math.max(1, Math.min(16, settings.getInteger("mysql.pool.max", 8))));
         config.setMinimumIdle(Math.max(1, Math.min(16, settings.getInteger("mysql.pool.min", 1))));
         config.setPoolName("Wildcard");
-        config.setJdbcUrl("jdbc:mysql://" + settings.getString("mysql.host", "localhost") + ":"
-            + Math.abs(settings.getShort("mysql.port", DEFAULT_PORT)) + "/" + settings.getString("mysql.database", "Wildcard"));
+        config.setJdbcUrl(
+            "jdbc:mysql://" + settings.getString("mysql.host", "localhost") + ":" + Math.abs(settings.getShort("mysql.port", DEFAULT_PORT))
+                + "/" + settings.getString("mysql.database", "Wildcard") + "?serverTimezone=UTC&useLegacyDatetimeCode=false");
         config.setUsername(settings.getString("mysql.username", "root"));
         config.setPassword(settings.getString("mysql.password", "password"));
         config.setDriverClassName(Driver.class.getName());
@@ -128,10 +130,10 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
     public Connection getConnection() throws SQLException {
         return pool.getConnection();
     }
-    
+
     @Override
     public String getTableName(SQLTable table) {
-        switch(table) {
+        switch (table) {
         case HISTORY:
             return historyTable;
         case TOKEN:
@@ -196,7 +198,7 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
                 statement.setString(1, uniqueId.toString());
                 final ResultSet set = statement.executeQuery();
                 if (set.next()) {
-                    final OffsetDateTime time = set.getObject("Time", OffsetDateTime.class);
+                    final OffsetDateTime time = TimeHelper.fromString(set.getString("Time"));
                     final String tokenHash = set.getString("Token");
                     final UUID owner = UUIDHelper.fromString(set.getString("Owner"));
                     final int uses = set.getInt("Uses");
@@ -250,7 +252,7 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
                     statement.setString(1, uniqueId.toString());
                     statement.setString(2, tokenHash);
                     statement.setInt(3, uses);
-                    statement.setObject(4, expires);
+                    statement.setString(4, TimeHelper.toString(expires));
                     statement.executeUpdate();
                     final Token generatedToken = new Token(uniqueId, Hex.encodeHexString(tokenRaw), uses, expires);
                     tokenCache.put(uniqueId, token);
@@ -290,7 +292,7 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
             try (Connection connection = pool.getConnection()) {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryDeny);
                 statement.setString(1, uniqueId.toString());
-                statement.setObject(2, OffsetDateTime.now());
+                statement.setString(2, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, false);
                 return CompletableFuture.completedFuture(RequestResult.SUCCESS);
@@ -311,7 +313,7 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
                 final PreparedStatement statement = connection.prepareStatement(insertHistoryAllow);
                 statement.setString(1, uniqueId.toString());
                 statement.setString(2, targetId.toString());
-                statement.setObject(3, OffsetDateTime.now());
+                statement.setString(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
                 return CompletableFuture.completedFuture(RequestResult.SUCCESS);
@@ -337,7 +339,7 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
                 }
                 final UUID targetId = UUIDHelper.fromString(set.getString("Owner"));
                 final Token token = tokenCache.has(uniqueId) ? tokenCache.get(uniqueId)
-                    : new Token(targetId, tokenHash, set.getInt("Uses"), set.getObject("Time", OffsetDateTime.class));
+                    : new Token(targetId, tokenHash, set.getInt("Uses"), TimeHelper.fromString(set.getString("Time")));
                 if (token.use() == -1) {
                     deleteToken(token);
                     return CompletableFuture.completedFuture(RequestResult.FAILED);
@@ -346,7 +348,7 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
                 statement = connection.prepareStatement(insertHistoryAllow);
                 statement.setString(1, uniqueId.toString());
                 statement.setString(2, targetId.toString());
-                statement.setObject(3, OffsetDateTime.now());
+                statement.setString(3, TimeHelper.toString(OffsetDateTime.now()));
                 statement.executeUpdate();
                 wildcardCache.put(uniqueId, true);
                 return CompletableFuture.completedFuture(RequestResult.SUCCESS);
@@ -369,7 +371,8 @@ public class MySQLDatabase extends SQLDatabase implements ITickReceiver {
                 statement.setString(1, uniqueId.toString());
                 final ResultSet set = statement.executeQuery();
                 while (set.next()) {
-                    final OffsetDateTime time = set.getObject("Time", OffsetDateTime.class);
+                    final OffsetDateTime time = TimeHelper.fromString(set.getString("Time"));
+                    ;
                     final String target = set.getString("TokenOwner");
                     list.add(new HistoryEntry(uniqueId, target == null ? null : UUIDHelper.fromString(target), time));
                 }

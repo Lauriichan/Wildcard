@@ -109,7 +109,7 @@ public final class WebControl extends WebRedirectHandler {
         instance.setValidator((writer,
             request) -> (request.getType() == RequestType.POST ? RequestContent.NEEDED.message(request.getHeader("Content-Length") == null)
                 : RequestContent.UNNEEDED));
-        instance.applyName(core.getPlugin().getAdapter().getServerName());
+        instance.applyName(core.getServerName());
         this.hostPath.replace("http://" + (hostRaw == null ? host.getHostName() : hostRaw) + (port == 80 ? "/" : ":" + port + "/"));
         try {
             instance.start();

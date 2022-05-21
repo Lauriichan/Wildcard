@@ -16,7 +16,7 @@ public abstract class MigrationProvider implements Comparable<MigrationProvider>
 
     @Override
     public int compareTo(MigrationProvider o) {
-        return Long.compare(id, o.id);
+        return Long.compare(o.id, id);
     }
 
 }

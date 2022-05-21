@@ -199,6 +199,10 @@ public final class WildcardCore {
     public ILogger getLogger() {
         return logger;
     }
+    
+    public String getServerName() {
+        return Singleton.get(PluginSettings.class).getString("server.name", "Minecraft Server");
+    }
 
     public WebControl getWebControl() {
         return control.get();

@@ -291,7 +291,7 @@ public final class WildcardCommand implements IBasicCommand {
         final RequestResult result = database.deny(uniqueId).join();
         info.send("command.deny." + result.name().toLowerCase(), "user", name);
         if (result == RequestResult.SUCCESS) {
-            info.getMessageAdapter(uniqueId).kick(info.translate("unpermitted.ban", "server", info.getAdapter().getServerName()));
+            info.getMessageAdapter(uniqueId).kick(info.translate("unpermitted.ban", "server", info.getCore().getServerName()));
         }
     }
 

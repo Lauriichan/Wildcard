@@ -6,18 +6,12 @@ import me.lauriichan.minecraft.wildcard.bungee.component.BungeeComponentAdapter;
 import me.lauriichan.minecraft.wildcard.core.IWildcardAdapter;
 import me.lauriichan.minecraft.wildcard.core.util.ILogAssist;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public final class BungeeAdapter implements IWildcardAdapter {
 
     private final BungeeComponentAdapter componentAdapter = new BungeeComponentAdapter(this);
     private final ILogAssist assist = new BungeeLogAssist();
-
-    @Override
-    public String getServerName() {
-        return ProxyServer.getInstance().getName();
-    }
     
     @Override
     public BungeeComponentAdapter getComponentAdapter() {

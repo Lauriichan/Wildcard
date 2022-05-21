@@ -47,7 +47,6 @@ public final class WildcardSponge implements IWildcardPlugin {
     private final Container<File> jarFile = Container.of();
 
     private final File dataFolder;
-    private final SpongeConfiguration config;
 
     private boolean setup = false;
 
@@ -56,7 +55,6 @@ public final class WildcardSponge implements IWildcardPlugin {
         registerSQLite();
         this.logger = logger;
         this.container = container;
-        this.config = new SpongeConfiguration(Sponge.getConfigManager().getSharedConfig(container).getConfigPath(), "config.conf");
         this.dataFolder = Sponge.getConfigManager().getPluginConfig(container).getDirectory().toFile();
         this.adapter = new SpongeAdapter(this);
         this.executor = new SpongeExecutor(container);
@@ -142,10 +140,6 @@ public final class WildcardSponge implements IWildcardPlugin {
 
     public Logger getLogger() {
         return logger;
-    }
-
-    public SpongeConfiguration getConfig() {
-        return config;
     }
 
     public PluginContainer getContainer() {

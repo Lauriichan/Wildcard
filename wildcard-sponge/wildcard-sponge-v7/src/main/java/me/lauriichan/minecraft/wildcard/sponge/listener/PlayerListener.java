@@ -39,7 +39,7 @@ public class PlayerListener extends ConnectionListener {
             }
             event.setCancelled(true);
             event.setMessage(componentAdapter.asHandle(Translation.getDefault().translateComponent(core.getComponentParser(),
-                "unpermitted.join", "server", adapter.getServerName()))[0]);
+                "unpermitted.join", "server", core.getServerName()))[0]);
         }).join();
     }
 

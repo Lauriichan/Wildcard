@@ -42,7 +42,7 @@ public final class PlayerListener extends ConnectionListener implements Listener
                 return;
             }
             player.disconnect(componentAdapter.asHandle(Translation.getDefault().translateComponent(core.getComponentParser(),
-                "unpermitted.join", "server", adapter.getServerName())));
+                "unpermitted.join", "server", core.getServerName())));
         }).join();
     }
 
