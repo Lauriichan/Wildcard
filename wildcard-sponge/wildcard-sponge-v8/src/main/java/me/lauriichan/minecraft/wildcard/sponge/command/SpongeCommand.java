@@ -44,15 +44,15 @@ public final class SpongeCommand extends BaseCommand<SpongeInfo> implements Comm
     @Override
     public CommandResult process(CommandCause cause, Mutable arguments) throws CommandException {
         final SpongeInfo info = new SpongeInfo(core, cause);
-        final String input = arguments.input();
-        final int state = redirectCommand(info, arguments.input()) + 1;
+        final String[] args = arguments.input().split(" ");
+        final int state = redirectCommand(info, args) + 1;
         PlatformComponent[] error = null;
         switch (state) {
         case -1:
-            error = info.translate("command.execution.failed", "command", getCommandName(input));
+            error = info.translate("command.execution.failed", "command", getCommandName(args));
             break;
         case 0:
-            error = info.translate("command.execution.notfound", "command", getCommandName(input));
+            error = info.translate("command.execution.notfound", "command", getCommandName(args));
             break;
         }
         if (error != null) {
@@ -65,8 +65,7 @@ public final class SpongeCommand extends BaseCommand<SpongeInfo> implements Comm
     @Override
     public List<CommandCompletion> complete(CommandCause cause, Mutable arguments) throws CommandException {
         ArrayList<CommandCompletion> list = new ArrayList<>();
-        final String input = arguments.input();
-        List<String> completion = redirectComplete(new SpongeInfo(core, cause), input);
+        List<String> completion = redirectComplete(new SpongeInfo(core, cause), arguments.input().split(" "));
         if (completion != null && !completion.isEmpty()) {
             for (int i = 0; i < completion.size(); i++) {
                 list.add(CommandCompletion.of(completion.get(i))); // Possibly match to last argument in future

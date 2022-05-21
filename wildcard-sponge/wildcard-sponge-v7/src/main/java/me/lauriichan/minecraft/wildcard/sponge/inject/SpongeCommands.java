@@ -27,6 +27,7 @@ public class SpongeCommands extends Injector<SpongeCommand> {
         }
         ArrayList<String> names = new ArrayList<>();
         Collections.addAll(names, transfer.getAliases());
+        names.add(transfer.getName());
         Sponge.getCommandManager().register(((WildcardSponge) transfer.getCore().getPlugin()).getContainer(), transfer, names);
         registry.register(transfer);
     }

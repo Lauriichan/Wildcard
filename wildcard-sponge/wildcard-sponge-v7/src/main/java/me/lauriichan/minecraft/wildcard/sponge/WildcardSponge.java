@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -72,6 +73,9 @@ public final class WildcardSponge implements IWildcardPlugin {
 
     @Listener
     public void onStart(final GameStartedServerEvent event) {
+        if(Sponge.getPlatform().getExecutionType() != Platform.Type.SERVER) {
+            return;
+        }
         if (!core.enable()) {
             onStop(null);
             return;
@@ -86,15 +90,18 @@ public final class WildcardSponge implements IWildcardPlugin {
         }
         setup = true;
         core.preSetup();
-        service.replace(new SpongeService(core.getComponentParser(), Singleton.get(PluginSettings.class)));
-        Sponge.getEventManager().registerListeners(container, new PlayerListener(core, core.getDatabase()));
         core.getInjections().register(new SpongeCommands());
         core.registerCommands();
+        service.replace(new SpongeService(core.getComponentParser(), Singleton.get(PluginSettings.class)));
+        Sponge.getEventManager().registerListeners(container, new PlayerListener(core, core.getDatabase()));
         core.postSetup();
     }
 
     @Listener
     public void onStop(final GameStoppingServerEvent event) {
+        if(Sponge.getPlatform().getExecutionType() != Platform.Type.SERVER) {
+            return;
+        }
         core.disable();
     }
 

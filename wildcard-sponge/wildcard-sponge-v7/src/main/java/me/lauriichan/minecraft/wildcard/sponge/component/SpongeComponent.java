@@ -118,7 +118,7 @@ public final class SpongeComponent extends PlatformComponent {
 
     @Override
     public Text getHandle() {
-        Text.Builder builder = Text.builder();
+        Text.Builder builder = Text.builder(text);
         if (color != null) {
             builder.color(SpongeColorAdapter.ADAPTER.getNearestColor(color));
         }

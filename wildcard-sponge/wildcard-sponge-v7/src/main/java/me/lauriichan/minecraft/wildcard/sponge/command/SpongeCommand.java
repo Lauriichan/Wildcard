@@ -44,15 +44,16 @@ public final class SpongeCommand extends BaseCommand<SpongeInfo> implements Comm
 
     @Override
     public CommandResult process(CommandSource source, String input) throws CommandException {
+        final String[] args = input.split(" ");
         final SpongeInfo info = new SpongeInfo(core, source);
-        final int state = redirectCommand(info, input) + 1;
+        final int state = redirectCommand(info, args) + 1;
         PlatformComponent[] error = null;
         switch (state) {
         case -1:
-            error = info.translate("command.execution.failed", "command", getCommandName(input));
+            error = info.translate("command.execution.failed", "command", getCommandName(args));
             break;
         case 0:
-            error = info.translate("command.execution.notfound", "command", getCommandName(input));
+            error = info.translate("command.execution.notfound", "command", getCommandName(args));
             break;
         }
         if (error != null) {
@@ -64,7 +65,7 @@ public final class SpongeCommand extends BaseCommand<SpongeInfo> implements Comm
 
     @Override
     public List<String> getSuggestions(CommandSource source, String input, Location<World> targetPosition) throws CommandException {
-        List<String> completion = redirectComplete(new SpongeInfo(core, source), input);
+        List<String> completion = redirectComplete(new SpongeInfo(core, source), input.split(" "));
         if (completion != null && !completion.isEmpty()) {
             return completion;
         }
@@ -90,41 +91,5 @@ public final class SpongeCommand extends BaseCommand<SpongeInfo> implements Comm
     public Text getUsage(CommandSource source) {
         return LiteralText.of("/" + name);
     }
-
-    //    @Override
-    //    public CommandResult process(CommandCause cause, Mutable arguments) throws CommandException {
-    //    }
-    //
-    //    @Override
-    //    public List<CommandCompletion> complete(CommandCause cause, Mutable arguments) throws CommandException {
-    //        ArrayList<CommandCompletion> list = new ArrayList<>();
-    //        final String input = arguments.input();
-    //        List<String> completion = redirectComplete(new SpongeInfo(core, cause), input);
-    //        if (completion != null && !completion.isEmpty()) {
-    //            for (int i = 0; i < completion.size(); i++) {
-    //                list.add(CommandCompletion.of(completion.get(i))); // Possibly match to last argument in future
-    //            }
-    //        }
-    //        return list;
-    //    }
-    //
-    //    @Override
-    //    public boolean canExecute(CommandCause cause) {
-    //        return true;
-    //    }
-    //
-    //    @Override
-    //    public Optional<Component> shortDescription(CommandCause cause) {
-    //    }
-    //
-    //    @Override
-    //    public Optional<Component> extendedDescription(CommandCause cause) {
-    //        
-    //    }
-    //
-    //    @Override
-    //    public Component usage(CommandCause cause) {
-    //       
-    //    }
 
 }
