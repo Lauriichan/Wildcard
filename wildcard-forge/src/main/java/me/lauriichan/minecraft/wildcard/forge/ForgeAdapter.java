@@ -20,9 +20,4 @@ public final class ForgeAdapter implements IWildcardAdapter {
         return assist;
     }
 
-    @Override
-    public String getServerName() {
-        return ForgeConfiguration.SERVER.serverName.get();
-    }
-
 }

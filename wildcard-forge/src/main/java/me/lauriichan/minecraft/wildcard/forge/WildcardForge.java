@@ -60,7 +60,6 @@ public class WildcardForge implements IWildcardPlugin {
         registerSQLite();
         ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
             () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-        ForgeConfiguration.register(ModLoadingContext.get());
         this.dataFolder = new File(ModLoadingContext.get().getActiveNamespace());
         this.adapter = new ForgeAdapter();
         this.core = new WildcardCore(this);

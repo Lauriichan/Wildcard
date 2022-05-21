@@ -2,9 +2,7 @@ package me.lauriichan.minecraft.wildcard.fabric;
 
 import me.lauriichan.minecraft.wildcard.core.IWildcardAdapter;
 import me.lauriichan.minecraft.wildcard.core.message.IPlatformComponentAdapter;
-import me.lauriichan.minecraft.wildcard.core.settings.PluginSettings;
 import me.lauriichan.minecraft.wildcard.core.util.ILogAssist;
-import me.lauriichan.minecraft.wildcard.core.util.Singleton;
 import me.lauriichan.minecraft.wildcard.fabric.component.FabricComponentAdapter;
 
 public final class FabricAdapter implements IWildcardAdapter {
@@ -20,11 +18,6 @@ public final class FabricAdapter implements IWildcardAdapter {
     @Override
     public ILogAssist getLogAssist() {
         return assist;
-    }
-
-    @Override
-    public String getServerName() {
-        return Singleton.get(PluginSettings.class).getString("server.name", "Minecraft Server");
     }
 
 }
