@@ -63,7 +63,7 @@ public final class WebControl extends WebRedirectHandler {
     /*
      * Getters
      */
-    
+
     public ExecutorService getThreadService() {
         return threadService;
     }
@@ -96,7 +96,7 @@ public final class WebControl extends WebRedirectHandler {
         exit();
         loadRatelimit();
         final int port = settings.getInteger("port", 80);
-        final String hostRaw = settings.getString("host", "localhost");
+        final String hostRaw = settings.getString("host", "*");
         final InetAddress host = resolveHost(hostRaw);
         if (host == null) {
             core.getLogger().log(LogTypeId.WARNING, "Couldn't resolve host '" + hostRaw + "'!");
@@ -110,7 +110,11 @@ public final class WebControl extends WebRedirectHandler {
             request) -> (request.getType() == RequestType.POST ? RequestContent.NEEDED.message(request.getHeader("Content-Length") == null)
                 : RequestContent.UNNEEDED));
         instance.applyName(core.getServerName());
-        this.hostPath.replace("http://" + (hostRaw == null ? host.getHostName() : hostRaw) + (port == 80 ? "/" : ":" + port + "/"));
+        final boolean useHostPath = settings.getBoolean("host.use.path", false);
+        final boolean useHostPort = settings.getBoolean("host.use.port", true);
+        final String hostPath = settings.getString("host.path", "0.0.0.0");
+        this.hostPath.replace("http://" + (useHostPath ? hostPath : (hostRaw == null ? host.getHostName() : hostRaw))
+            + (useHostPort ? (port == 80 ? "/" : ":" + port + "/") : "/"));
         try {
             instance.start();
             server.replace(instance);
@@ -127,6 +131,9 @@ public final class WebControl extends WebRedirectHandler {
 
     private InetAddress resolveHost(final String host) {
         try {
+            if (host == null || host.trim().isEmpty() || host.equals("*")) {
+                return InetAddress.getByName("0.0.0.0");
+            }
             return InetAddress.getByName(host);
         } catch (final UnknownHostException e) {
             // Ignore and just return null
