@@ -12,6 +12,7 @@ import com.syntaxphoenix.syntaxapi.net.http.ResponseCode;
 import com.syntaxphoenix.syntaxapi.net.http.StandardNamedType;
 
 import me.lauriichan.minecraft.wildcard.core.util.Awaiter;
+import me.lauriichan.minecraft.wildcard.core.web.util.BinaryFileAnswer;
 import me.lauriichan.minecraft.wildcard.core.web.util.PathRequestEvent;
 import me.lauriichan.minecraft.wildcard.core.web.util.PlaceholderFileAnswer;
 
@@ -28,7 +29,7 @@ public final class ComplexPathHandler implements ISpecialPathHandler {
         throws Exception {
         File file = new File(directory, data.getPathAsString()).getCanonicalFile();
         String directoryPath = directory.getCanonicalPath();
-        if(!file.getCanonicalPath().equals(directoryPath) && !file.getParent().startsWith(directoryPath)) {
+        if (!file.getCanonicalPath().equals(directoryPath) && !file.getParent().startsWith(directoryPath)) {
             new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.FORBIDDEN).write(writer);
             return;
         }
@@ -70,7 +71,16 @@ public final class ComplexPathHandler implements ISpecialPathHandler {
             new NamedAnswer(StandardNamedType.PLAIN).code(ResponseCode.FORBIDDEN).write(writer);
             return;
         }
-        new PlaceholderFileAnswer(file, type, sender, data, manager).code(ResponseCode.OK).write(writer);
+        if (type.type().contains("text") || type.type().contains("application")) {
+            new PlaceholderFileAnswer(file, type, sender, data, manager).code(ResponseCode.OK).write(writer);
+            return;
+        }
+        BinaryFileAnswer answer = new BinaryFileAnswer(file, type);
+        if (!answer.hasResponse()) {
+            answer.code(ResponseCode.NOT_FOUND).write(writer);
+            return;
+        }
+        answer.code(ResponseCode.OK).write(writer);
     }
 
 }

@@ -25,12 +25,12 @@ public final class TokenMigration2022_02_04_0_40 extends MySQLMigration {
 
     @Override
     public String getOldFormat() {
-        return "Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires DATETIME, CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner)";
+        return "Owner BINARY(16) NOT NULL, Token BINARY(20) NOT NULL, Uses INT NOT NULL, Expires DATETIME, PRIMARY KEY (Owner), UNIQUE KEY UToken (Token)";
     }
 
     @Override
     public String getNewFormat() {
-        return "Owner VARCHAR(36) NOT NULL, Token VARCHAR(40) NOT NULL, Uses INT NOT NULL, Expires DATETIME, CONSTRAINT UToken UNIQUE (Token), CONSTRAINT POwner PRIMARY KEY (Owner)";
+        return "Owner VARCHAR(36) NOT NULL, Token VARCHAR(40) NOT NULL, Uses INT NOT NULL, Expires DATETIME, PRIMARY KEY (Owner), UNIQUE KEY UToken (Token)";
     }
 
     @Override

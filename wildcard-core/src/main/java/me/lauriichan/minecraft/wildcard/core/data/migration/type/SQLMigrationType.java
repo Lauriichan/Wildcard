@@ -195,7 +195,7 @@ public final class SQLMigrationType extends MigrationType<SQLDatabase, SQLMigrat
     }
 
     private String extractFormat(String input) {
-        return (input = input.split("\\(", 2)[1]).substring(0, input.length() - 1);
+        return (input = input.split("\\(", 2)[1]).substring(0, input.length() - 1).trim();
     }
 
     private static enum State {

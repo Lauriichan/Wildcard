@@ -3,6 +3,8 @@ package me.lauriichan.minecraft.wildcard.core.data.storage.mysql;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import me.lauriichan.minecraft.wildcard.core.data.migration.impl.SQLMigration;
 import me.lauriichan.minecraft.wildcard.core.data.storage.SQLTable;
@@ -28,7 +30,27 @@ public abstract class MySQLMigration extends SQLMigration {
 
     @Override
     public String getFormat(ResultSet set) throws SQLException {
-        return set.getString(2);
+        String string = set.getString(2);
+        String[] lines = string.split("\n");
+        for (int index = 1; index < lines.length; index++) {
+            String line = lines[index].trim();
+            if (line.startsWith("`")) {
+                line = line.replace("`", "");
+                String[] parts = line.split(" ");
+                parts[1] = parts[1].toUpperCase();
+                if (!(parts[1].startsWith("VARCHAR") || parts[1].startsWith("BINARY"))) {
+                    parts[1] = parts[1].split("\\(")[0];
+                }
+                lines[index] = Arrays.stream(parts).collect(Collectors.joining(" ")).replace(" DEFAULT NULL", "");
+                continue;
+            }
+            if (line.startsWith(")")) {
+                lines[index] = "";
+                continue;
+            }
+            lines[index] = line.replace("`", "");
+        }
+        return Arrays.stream(lines).collect(Collectors.joining(" "));
     }
 
     @Override

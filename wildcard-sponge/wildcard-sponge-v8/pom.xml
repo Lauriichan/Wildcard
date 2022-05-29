@@ -3,7 +3,7 @@
     <parent>
         <groupId>me.lauriichan.minecraft.wildcard</groupId>
         <artifactId>wildcard-sponge</artifactId>
-        <version>2.1.4</version>
+        <version>2.1.5</version>
     </parent>
     <artifactId>wildcard-sponge-v8</artifactId>
     <version>${project.parent.version}.0-8</version>
